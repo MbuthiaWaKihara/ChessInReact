@@ -769,7 +769,177 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                         }//END QUEEN POSSIBLE MOVES GENERATION
 
                         if(pieceName === 'Knight'){//START KNIGHT POSSIBLE MOVES GENERATION
+                            //the knight moves in a combination of either two ranks and a file beside(up or down)
+                            //or two files and a rank beneath or above(left or right)
 
+                            //up
+                            //up left
+                            if(chessboardSituation[rankIndex - 2]
+                                && chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex - 1]
+                                && !chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex - 1].hasPiece){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex - 2].rankNumber}.${chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex - 1].fileNumber}`
+                                    ];
+                            }
+                            if(chessboardSituation[rankIndex - 2]
+                                && chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex - 1]
+                                && chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex - 1].hasPiece
+                                && chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex - 1].pieceColor !== pieceColor){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex - 2].rankNumber}.${chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex - 1].fileNumber}.X`
+                                    ];
+                            }
+                            //up right
+                            if(chessboardSituation[rankIndex - 2]
+                                && chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex + 1]
+                                && !chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex + 1].hasPiece){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex - 2].rankNumber}.${chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex + 1].fileNumber}`
+                                    ];
+                            }
+                            if(chessboardSituation[rankIndex - 2]
+                                && chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex + 1]
+                                && chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex + 1].hasPiece
+                                && chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex + 1].pieceColor !== pieceColor){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex - 2].rankNumber}.${chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
+                                    ];
+                            }
+
+                            //down
+                            //down left
+                            if(chessboardSituation[rankIndex + 2]
+                                && chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex - 1]
+                                && !chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex - 1].hasPiece){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex + 2].rankNumber}.${chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex - 1].fileNumber}`
+                                    ];
+                            }
+                            if(chessboardSituation[rankIndex + 2]
+                                && chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex - 1]
+                                && chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex - 1].hasPiece
+                                && chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex - 1].pieceColor !== pieceColor){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex + 2].rankNumber}.${chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex - 1].fileNumber}.X`
+                                    ];
+                            }
+                            //down right
+                            if(chessboardSituation[rankIndex + 2]
+                                && chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex + 1]
+                                && !chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex + 1].hasPiece){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex + 2].rankNumber}.${chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex + 1].fileNumber}`
+                                    ];
+                            }
+                            if(chessboardSituation[rankIndex + 2]
+                                && chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex + 1]
+                                && chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex + 1].hasPiece
+                                && chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex + 1].pieceColor !== pieceColor){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex + 2].rankNumber}.${chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
+                                    ];
+                            }
+
+                            //left
+                            //left up
+                            if(chessboardSituation[rankIndex - 1]
+                                && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 2]
+                                && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 2].hasPiece){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 2].fileNumber}`
+                                    ];
+                            }
+                            if(chessboardSituation[rankIndex - 1]
+                                && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 2]
+                                && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 2].hasPiece
+                                && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 2].pieceColor !== pieceColor){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 2].fileNumber}.X`
+                                    ];
+                            }
+
+                            //left down
+                            if(chessboardSituation[rankIndex + 1]
+                                && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 2]
+                                && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 2].hasPiece){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 2].fileNumber}`
+                                    ];
+                            }
+                            if(chessboardSituation[rankIndex + 1]
+                                && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 2]
+                                && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 2].hasPiece
+                                && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 2].pieceColor !== pieceColor){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 2].fileNumber}.X`
+                                    ];
+                            }
+
+                            //right
+                            //right up
+                            if(chessboardSituation[rankIndex - 1]
+                                && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 2]
+                                && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 2].hasPiece){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 2].fileNumber}`
+                                    ];
+                            }
+                            if(chessboardSituation[rankIndex - 1]
+                                && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 2]
+                                && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 2].hasPiece
+                                && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 2].pieceColor !== pieceColor){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 2].fileNumber}.X`
+                                    ];
+                            }
+
+                            //right down
+                            if(chessboardSituation[rankIndex + 1]
+                                && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 2]
+                                && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 2].hasPiece){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 2].fileNumber}`
+                                    ];
+                            }
+                            if(chessboardSituation[rankIndex + 1]
+                                && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 2]
+                                && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 2].hasPiece
+                                && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 2].pieceColor !== pieceColor){
+                                    moves = [
+                                        ...moves,
+                                        `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 2].fileNumber}.X`
+                                    ];
+                            }
+
+                            possibleMoves = [
+                                ...possibleMoves, 
+                                {
+                                    pieceId,
+                                    pieceName,
+                                    pieceColor,
+                                    pieceMoves,
+                                    pieceFile,
+                                    pieceRank,
+                                    moves,
+                                }
+                            ];
+    
+                            moves = [];
                         }//END KNIGHT POSSIBLE MOVES GENERATION
 
                         //hasPiece is here
