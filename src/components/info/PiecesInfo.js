@@ -9,7 +9,7 @@ export const initialPieceInfo = [
         noOfMoves: 0,
         positionOnBoard: {
             rankNumber: 1,
-            fileNumber: 1,
+            fileNumber: 5,
             fileName: 'a',
         }
     },
@@ -20,8 +20,8 @@ export const initialPieceInfo = [
         hasBeenCaptured: false,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 1,
-            fileNumber: 4,
+            rankNumber: 5,
+            fileNumber: 5,
             fileName: 'h',
         }
     },
@@ -32,8 +32,8 @@ export const initialPieceInfo = [
         hasBeenCaptured: false,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 2,
-            fileNumber: 3,
+            rankNumber: 8,
+            fileNumber: 1,
             fileName: 'a',
         }
     },
@@ -41,11 +41,11 @@ export const initialPieceInfo = [
         pieceId: 4,
         pieceName: 'Rook',
         pieceColor: 'black',
-        hasBeenCaptured: true,
+        hasBeenCaptured: false,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 8,
-            fileNumber: 8,
+            rankNumber: 6,
+            fileNumber: 6,
             fileName: 'h',
         }
     },
@@ -77,11 +77,11 @@ export const initialPieceInfo = [
         pieceId: 7,
         pieceName: 'Knight',
         pieceColor: 'black',
-        hasBeenCaptured: true,
+        hasBeenCaptured: false,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 8,
-            fileNumber: 2,
+            rankNumber: 3,
+            fileNumber: 3,
             fileName: 'b',
         }
     },
@@ -89,11 +89,11 @@ export const initialPieceInfo = [
         pieceId: 8,
         pieceName: 'Knight',
         pieceColor: 'black',
-        hasBeenCaptured: true,
+        hasBeenCaptured: false,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 8,
-            fileNumber: 7,
+            rankNumber: 7,
+            fileNumber: 5,
             fileName: 'g',
         }
     },
@@ -104,8 +104,8 @@ export const initialPieceInfo = [
         hasBeenCaptured: false,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 2,
-            fileNumber: 2,
+            rankNumber: 3,
+            fileNumber: 4,
             fileName: 'c',
         }
     },
@@ -129,7 +129,7 @@ export const initialPieceInfo = [
         noOfMoves: 0,
         positionOnBoard: {
             rankNumber: 7,
-            fileNumber: 2,
+            fileNumber: 4,
             fileName: 'c',
         }
     },
@@ -137,11 +137,11 @@ export const initialPieceInfo = [
         pieceId: 12,
         pieceName: 'Bishop',
         pieceColor: 'black',
-        hasBeenCaptured: false,
+        hasBeenCaptured: true,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 4,
-            fileNumber: 2,
+            rankNumber: 8,
+            fileNumber: 6,
             fileName: 'f',
         }
     },
@@ -149,11 +149,11 @@ export const initialPieceInfo = [
         pieceId: 13,
         pieceName: 'Queen',
         pieceColor: 'white',
-        hasBeenCaptured: false,
+        hasBeenCaptured: true,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 5,
-            fileNumber: 5,
+            rankNumber: 1,
+            fileNumber: 4,
             fileName: 'd',
         }
     },
@@ -161,11 +161,11 @@ export const initialPieceInfo = [
         pieceId: 14,
         pieceName: 'Queen',
         pieceColor: 'black',
-        hasBeenCaptured: false,
+        hasBeenCaptured: true,
         noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 7,
-            fileNumber: 6,
+            rankNumber: 8,
+            fileNumber: 4,
             fileName: 'd',
         }
     },
@@ -173,11 +173,11 @@ export const initialPieceInfo = [
         pieceId: 15,
         pieceName: 'King',
         pieceColor: 'white',
-        hasBeenCaptured: false,
+        hasBeenCaptured: true,
         noOfMoves: 0,
         positionOnBoard: {
             rankNumber: 1,
-            fileNumber: 7,
+            fileNumber: 5,
             fileName: 'e',
         }
     },
@@ -185,11 +185,11 @@ export const initialPieceInfo = [
         pieceId: 16,
         pieceName: 'King',
         pieceColor: 'black',
-        hasBeenCaptured: false,
+        hasBeenCaptured: true,
         noOfMoves: 0,
         positionOnBoard: {
             rankNumber: 8,
-            fileNumber: 8,
+            fileNumber: 5,
             fileName: 'e',
         }
     },
@@ -275,9 +275,9 @@ export const initialPieceInfo = [
         pieceName: 'Pawn',
         pieceColor: 'white',
         hasBeenCaptured: false,
-        noOfMoves: 0,
+        noOfMoves: 1,
         positionOnBoard: {
-            rankNumber: 2,
+            rankNumber: 4,
             fileNumber: 8,
             fileName: 'h',
         }
@@ -286,9 +286,9 @@ export const initialPieceInfo = [
         pieceName: 'Pawn',
         pieceColor: 'black',
         hasBeenCaptured: false,
-        noOfMoves: 1,
+        noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 6,
+            rankNumber: 7,
             fileNumber: 1,
             fileName: 'a',
         }
@@ -297,9 +297,9 @@ export const initialPieceInfo = [
         pieceName: 'Pawn',
         pieceColor: 'black',
         hasBeenCaptured: false,
-        noOfMoves: 1,
+        noOfMoves: 0,
         positionOnBoard: {
-            rankNumber: 5,
+            rankNumber: 7,
             fileNumber: 2,
             fileName: 'b',
         }
@@ -362,7 +362,7 @@ export const initialPieceInfo = [
         pieceId: 32,
         pieceName: 'Pawn',
         pieceColor: 'black',
-        hasBeenCaptured: false,
+        hasBeenCaptured: true,
         noOfMoves: 0,
         positionOnBoard: {
             rankNumber: 7,
