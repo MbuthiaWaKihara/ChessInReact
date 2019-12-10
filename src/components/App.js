@@ -2,9 +2,14 @@ import React,{
     useReducer,
 } from 'react';
 import Chessboard from './Chessboard';
+import Screen from './Screen';
 
 //this is the outer app component. It manages the board page
 
+//redducer function that changes player to play
+const changeTurn = (currentTurn, action) => {
+    return currentTurn;
+}
 
 //variable that holds the initial board layout
 //the board layout will default to black player up and white player down
@@ -38,16 +43,25 @@ const exchangeChessBoardLayout = (currentLayout, action) => {
 const App = () => 
 {
     //state variable that keeps track of the board layout
-    const[chessboardLayout, switchChessBoardLayout] = useReducer(exchangeChessBoardLayout, initialChessboardLayout);
+    const [chessboardLayout, switchChessBoardLayout] = useReducer(exchangeChessBoardLayout, initialChessboardLayout);
+
+    //state variable that keeps track of player to play
+    const [turn, dispatchTurn] = useReducer(changeTurn,{
+        color: 'white',
+    });
 
     return(
      <>
+        <Screen
+            turn={turn}
+        />
         <Chessboard 
             chessboardLayout={chessboardLayout}
+            turn={turn}
         />
         <button onClick={() => switchChessBoardLayout({type: 'EXCHANGE'})}>Flip Board</button>
      </>
-    )
+    );
 }
 
 export default App;

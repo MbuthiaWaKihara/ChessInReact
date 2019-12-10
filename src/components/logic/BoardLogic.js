@@ -1,20 +1,24 @@
-
 //method that creates a chessboard based on the layout given
-export const createChessboardInfo = (chessboardLayout) => {
+export const createChessboardInfo = (chessboardLayout, colorScheme) => {
 
     //a variable that will store the chessboard when the app is first loaded
     //or when a user changes the layout
     let chessboardInfo = [];
     let associatedFilesHolder = [];
+    let color;
+    let initialColor;
+    let squareClass;
 
     for(let currentRank = 0; currentRank < 8; currentRank++){
+
         //prepare an array that holds info about the files associated with current rank
         for(let fileCounter = 0; fileCounter < 8; fileCounter++){
+       
             associatedFilesHolder = [
                 ...associatedFilesHolder,
                 {
                     fileNumber: chessboardLayout.fileNumbers[fileCounter],
-                    fileName: chessboardLayout.filesPlacement[fileCounter]
+                    fileName: chessboardLayout.filesPlacement[fileCounter],
                 }
             ];
         }
@@ -31,11 +35,93 @@ export const createChessboardInfo = (chessboardLayout) => {
 
         associatedFilesHolder = [];
     }
+
+
+    let chessboardCopy = chessboardInfo
+    chessboardCopy.forEach(
+        (rankInfo, rankIndex) => {
+            
+            if(rankIndex % 2 === 0){
+                initialColor = '#ccfbfc';
+            }else{
+                initialColor = '#4edbde';
+            }
+    
+            rankInfo.associatedFiles.forEach(
+                (fileInfo, fileIndex) => {
+
+                    if(colorScheme.isColorSchemeDefault){
+                        squareClass = 'normal';
+                       if(fileIndex === 0){
+                           color = initialColor;
+                       }else{
+                          if(fileIndex % 2 === 1){
+                            if(initialColor === '#4edbde') color = '#ccfbfc';
+                            if(initialColor === '#ccfbfc') color = '#4edbde';
+                          }else{
+                            color = initialColor;
+                          }
+                        }
+
+                        chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
+                            ...fileInfo,
+                            color,
+                            squareClass,
+                        }
+                    }else{
+                        if(colorScheme.type === 'POSSIBLE_MOVES'){
+
+                            if(`${chessboardInfo[rankIndex].rankNumber}.${chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber}` === colorScheme.targetSquare){
+                                squareClass = 'selectedInMove';
+                                chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
+                                    ...fileInfo,
+                                    squareClass,
+                                }
+                            }else{
+                               squareClass = 'normal';
+                                if(fileIndex === 0){
+                                    color = initialColor;
+                                }else{
+                                    if(fileIndex % 2 === 1){
+                                        if(initialColor === '#4edbde') color = '#ccfbfc';
+                                        if(initialColor === '#ccfbfc') color = '#4edbde';
+                                    }else{
+                                        color = initialColor;
+                                    }
+                                    }
+
+                                    chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
+                                        ...fileInfo,
+                                        color,
+                                        squareClass,
+                                    }
+                            }
+
+                            colorScheme.possibleSquares.forEach(
+                                (square, squareIndex) => {
+                                    if(`${chessboardInfo[rankIndex].rankNumber}.${chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber}` === square){
+                                        squareClass = 'amongPossibleSquares';
+                                        chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
+                                            ...fileInfo,
+                                            squareClass,
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                }
+            );
+
+            
+        }
+    );
+
     return chessboardInfo;
 }
 
 
-//a method that determine which pieces are where on the chessboard, called as chessboardSituation
+//a method that determines which pieces are where on the chessboard, called as chessboardSituation
 //this method produces an array that can be used to generate possible moves
 export const determineChessboardSituation = (chessboardInfo, currentPieceInfo) => {
     let chessboardSituation = [];
