@@ -100,10 +100,22 @@ export const createChessboardInfo = (chessboardLayout, colorScheme) => {
 
                             colorScheme.possibleSquares.forEach(
                                 (square, squareIndex) => {
+                                    if(fileIndex === 0){
+                                        color = initialColor;
+                                    }else{
+                                        if(fileIndex % 2 === 1){
+                                            if(initialColor === '#4edbde') color = '#ccfbfc';
+                                            if(initialColor === '#ccfbfc') color = '#4edbde';
+                                        }else{
+                                            color = initialColor;
+                                        }
+                                        }
+
                                     if(`${chessboardInfo[rankIndex].rankNumber}.${chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber}` === square.substring(0,3)){
                                         squareClass = 'amongPossibleSquares';
                                         chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
                                             ...fileInfo,
+                                            color,
                                             squareClass,
                                         }
                                     }

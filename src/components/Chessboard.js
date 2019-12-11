@@ -86,8 +86,28 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
     // console.log("chess board situation", chessboardSituation);
 
     //a variable that stores all possible moves for all the pieces inside the current chessboard situation
-    const possibleMoves = generatePossibleMoves(chessboardSituation, chessboardLayout.default);
+    const possibleMoves = generatePossibleMoves(chessboardSituation, chessboardLayout.default, turn.color);
     // console.log("possible moves", possibleMoves);
+    
+    //a reducer method that will add a move to history
+    const addToHistory = (currentHistory, action) => {
+        switch(action.type){
+            case 'ADD_BLACK_MOVE':
+                let copy = currentHistory;
+                copy[currentHistory.length - 1].push(action.value);
+                return copy;
+            case 'ADD_WHITE_MOVE':
+                let newmove = [];
+                newmove = [...newmove, action.value];
+                return([
+                    ...currentHistory, newmove
+                ]);
+            default:
+                return currentHistory;
+        }
+    }
+    //a state variable that will hold an array of moves already made
+    const [history, updateHistory] = useReducer(addToHistory, []);
 
     //callbacks
     //handles action when a user makes an interaction with the chessboard
@@ -157,6 +177,37 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
                     // console.log("current pieces", currentPieceInfo);
                     setColorScheme({type: 'RETURN_TO_DEFAULT',});
                     setActivityPhase({from: null, to: null});
+
+                    if(turn.color === 'white'){
+                        possibleMoves.forEach(
+                            (piece, pieceIndex) => {
+                                if(piece.pieceId === activityPhase.pieceId){
+                                    piece.moves.forEach(
+                                        (move, moveIndex) => {
+                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
+                                                updateHistory({type: 'ADD_WHITE_MOVE', value: {id:activityPhase.pieceId, move}});
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        );
+                    }else if(turn.color === 'black'){
+                        possibleMoves.forEach(
+                            (piece, pieceIndex) => {
+                                if(piece.pieceId === activityPhase.pieceId){
+                                    piece.moves.forEach(
+                                        (move, moveIndex) => {
+                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
+                                                updateHistory({type: 'ADD_BLACK_MOVE', value: {id:activityPhase.pieceId, move}});
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        );
+                    }
+
                     switchTurn({type: 'CHANGE_COLOR'});
                 }else{
                     setColorScheme({type: 'RETURN_TO_DEFAULT',});
@@ -200,9 +251,40 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
                     );
 
                     changePieceInfo({type: 'UPDATE_PIECE_POSITION', value: currentPieces});
-                    console.log("current pieces", currentPieceInfo);
+                    // console.log("current pieces", currentPieceInfo);
                     setColorScheme({type: 'RETURN_TO_DEFAULT',});
                     setActivityPhase({from: null, to: null});
+
+                    if(turn.color === 'white'){
+                        possibleMoves.forEach(
+                            (piece, pieceIndex) => {
+                                if(piece.pieceId === activityPhase.pieceId){
+                                    piece.moves.forEach(
+                                        (move, moveIndex) => {
+                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
+                                                updateHistory({type: 'ADD_WHITE_MOVE', value: {id:activityPhase.pieceId, move}});
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        );
+                    }else if(turn.color === 'black'){
+                        possibleMoves.forEach(
+                            (piece, pieceIndex) => {
+                                if(piece.pieceId === activityPhase.pieceId){
+                                    piece.moves.forEach(
+                                        (move, moveIndex) => {
+                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
+                                                updateHistory({type: 'ADD_BLACK_MOVE', value: {id:activityPhase.pieceId, move}});
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        );
+                    }
+
                     switchTurn({type: 'CHANGE_COLOR'});
                 }else{
                     setColorScheme({type: 'RETURN_TO_DEFAULT',});
@@ -211,10 +293,15 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
               
             }
 
+        }
 
-            //the user clicks on a piece that is his
-            if(pieceInfo.color === turn.color && pieceInfo.id){
+        //the user clicks on a piece that is his
+        if(pieceInfo.color === turn.color && pieceInfo.id){
             
+            if(pieceInfo.id === activityPhase.pieceId){
+                setColorScheme({type: 'RETURN_TO_DEFAULT',});
+                setActivityPhase({from: null, to: null});
+            }else{
                 let possibleSquares = [];
                 possibleMoves.forEach(
                     (piece, pieceIndex) => {
@@ -374,8 +461,9 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
                             onClick={() => launchPlayerActivity(chessboardInfo[rankIndex].rankNumber, chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber, {id: null})}
                             className={chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass}
                             key={`${rankIndex} ${fileIndex}`}
-                            style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
+                            style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ||  chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'amongPossibleSquares' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
                             >
+                            <div></div>
                             </div>
                         );
 
@@ -384,6 +472,8 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
             )
         }
         );
+
+    console.log("history", history);
 
     return(
         <>

@@ -1,8 +1,11 @@
 import React,{
     useReducer,
+    useState,
+    useEffect,
 } from 'react';
 import Chessboard from './Chessboard';
 import Screen from './Screen';
+import '../styles/appStyles.css';
 
 //this is the outer app component. It manages the board page
 
@@ -59,6 +62,22 @@ const App = () =>
         color: 'white',
     });
 
+    //state variable that keeps track of the movecount
+    const [moveCount, setMoveCount] = useState(0);
+
+    //update the movecount whenever turn is white
+    useEffect(
+        () => {
+            if(turn.color === 'white'){
+                setMoveCount(
+                    previousCount => {
+                        return previousCount + 1;
+                    }
+                );
+            }
+        }, [turn]
+    );
+
     return(
      <>
         <Screen
@@ -68,8 +87,12 @@ const App = () =>
             chessboardLayout={chessboardLayout}
             turn={turn}
             switchTurn={dispatchTurn}
+            moveCount={moveCount}
         />
-        <button onClick={() => switchChessBoardLayout({type: 'EXCHANGE'})}>Flip Board</button>
+        <button
+        onClick={() => switchChessBoardLayout({type: 'EXCHANGE'})}
+        className="options"
+        >Flip Board</button>
      </>
     );
 }

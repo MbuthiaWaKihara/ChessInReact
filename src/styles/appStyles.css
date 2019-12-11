@@ -1,0 +1,15 @@
+.options {
+    background-color:  #4edbde;
+    color: #ffffff;
+    font-size: 1.2em;
+    border: none;
+    padding: 10px;
+    font-weight: bolder;
+    margin-top: 20px;
+}
+
+.options:hover {
+    background-color: #ccfbfc;
+    color: #4edbde; 
+}
+

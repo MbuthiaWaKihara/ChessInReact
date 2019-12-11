@@ -1,17 +1,43 @@
 .selectedInMove {
-    background-color: #c3d4d9;
+    background-color: #989ca3;
 }
+
+.selectedInMove div{
+    display: none;
+}
+
 .amongPossibleSquares {
-    background-color: #7fc7bf;
     border: 1px solid #ccfbfc;
-    border-radius: 5px;
+}
+
+.amongPossibleSquares div{
+    background-color: #c3d4d9;
+    width: 30%;
+    height: 30%;
+    border-radius: 50px;
+    margin: 33%;
+}
+
+.amongPossibleSquares div:hover{
+    display: none;
 }
 .amongPossibleCaptures {
-    background-color: #adadad;
-    border: 1px solid #a0ff61;
-    border-radius: 5px;
+    background-color:#c3d4d9;
 }
+
+.amongPossibleCaptures div{
+    display: none;
+}
+
 .normal {
     border: none;
+}
+
+.normal:hover {
+    opacity: .6;
+}
+
+.normal div{
+    display: none;
 }
 

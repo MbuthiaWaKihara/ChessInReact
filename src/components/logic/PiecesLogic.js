@@ -1,7 +1,7 @@
 
 //this method will generate an array of possible moves for every piece currently on the board
 //the method relies on the current board situation
-export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
+export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, currentPlayer) => {
     let possibleMoves = [];
 
     chessboardSituation.forEach(
@@ -9,7 +9,7 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
             rankInfo.associatedFilesSituation.forEach(
                 (fileInfo, fileIndex) => {
                     
-                    if(fileInfo.hasPiece){//the piece in this square is candidate for having possible moves
+                    if(fileInfo.hasPiece && fileInfo.pieceColor === currentPlayer){//the piece in this square is candidate for having possible moves
                         let pieceId = fileInfo.pieceId;
                         let pieceName = fileInfo.pieceName;
                         let pieceColor = fileInfo.pieceColor;
@@ -21,55 +21,76 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                         if(pieceName === 'Pawn' && pieceColor === 'white'){//START PAWN POSSIBLE MOVES GENERATION
                             if(isLayoutDefault){
                                 //the pawn can move two squares infront on condition that it has not been moved before and that square has no piece and the square before it has no piece
-                                if(pieceMoves === 0 && !chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex].hasPiece && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece){
+                                if(pieceMoves === 0 
+                                    && !chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex].hasPiece 
+                                    && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex -2].rankNumber}.${chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
                                 //the pawn can move a square infront on condition that the square exists and it doesn't have a piece
-                                if(chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex] && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece){
+                                if(chessboardSituation[rankIndex - 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex] 
+                                    && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex-1].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
                                 //the pawn can move a square in the front rank and any of the front side files on condition that those squares exist and they have a black piece
-                                if((chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1] && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].hasPiece) && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].pieceColor === 'black'){
+                                if((chessboardSituation[rankIndex - 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].hasPiece) 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].pieceColor === 'black'){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].fileNumber}.X`
                                     ];
                                 }
-                                if((chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1] && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].hasPiece) && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].pieceColor === 'black'){
+                                if((chessboardSituation[rankIndex - 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].hasPiece) 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].pieceColor === 'black'){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
                                     ];
                                 }
+
                             }else{
                                 //the pawn can move two squares infront on condition that it has not been moved before and that square has no piece
-                                if(pieceMoves === 0 && !chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex].hasPiece && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece){
+                                if(pieceMoves === 0 
+                                    && !chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex].hasPiece 
+                                    && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex +2].rankNumber}.${chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
                                  //the pawn can move a square infront on condition that the square exists and it doesn't have a piece
-                                 if(chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex] && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece){
+                                 if(chessboardSituation[rankIndex + 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex] 
+                                    && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex+1].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
                                 //the pawn can move a square in the front rank and any of the front side files on condition that those squares exist and they have a black piece
-                                if((chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1] && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].hasPiece) && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].pieceColor === 'black'){
+                                if((chessboardSituation[rankIndex + 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].hasPiece) 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].pieceColor === 'black'){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].fileNumber}.X`
                                     ];
                                 }
-                                if((chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1] && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].hasPiece) && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].pieceColor === 'black'){
+                                if((chessboardSituation[rankIndex + 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].hasPiece) 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].pieceColor === 'black'){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
@@ -94,27 +115,37 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                         }else if(pieceName === 'Pawn' && pieceColor === 'black'){
                             if(!isLayoutDefault){
                                 //the pawn can move two squares infront on condition that it has not been moved before and that square has no piece
-                                if(pieceMoves === 0 && !chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex].hasPiece && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece){
+                                if(pieceMoves === 0 
+                                    && !chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex].hasPiece 
+                                    && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex -2].rankNumber}.${chessboardSituation[rankIndex - 2].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
                                 //the pawn can move a square infront on condition that the square exists and it doesn't have a piece
-                                if(chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex] && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece){
+                                if(chessboardSituation[rankIndex - 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex] 
+                                    && !chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex-1].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
                                 //the pawn can move a square in the front rank and any of the front side files on condition that those squares exist and they have a black piece
-                                if((chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1] && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].hasPiece) && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].pieceColor === 'white'){
+                                if((chessboardSituation[rankIndex - 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].hasPiece) 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].pieceColor === 'white'){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].fileNumber}.X`
                                     ];
                                 }
-                                if((chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1] && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].hasPiece) && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].pieceColor === 'white'){
+                                if((chessboardSituation[rankIndex - 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1] 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].hasPiece) 
+                                    && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].pieceColor === 'white'){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
@@ -122,27 +153,37 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 }
                             }else{
                                 //the pawn can move two squares infront on condition that it has not been moved before and that square has no piece
-                                if(pieceMoves === 0 && !chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex].hasPiece && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece){
+                                if(pieceMoves === 0 
+                                    && !chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex].hasPiece 
+                                    && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex +2].rankNumber}.${chessboardSituation[rankIndex + 2].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
                                  //the pawn can move a square infront on condition that the square exists and it doesn't have a piece
-                                 if(chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex] && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece){
+                                 if(chessboardSituation[rankIndex + 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex] 
+                                    && !chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex+1].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
                                 //the pawn can move a square any of the front side files on condition that those squares exist and they have a black piece
-                                if((chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1] && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].hasPiece) && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].pieceColor === 'white'){
+                                if((chessboardSituation[rankIndex + 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].hasPiece) 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].pieceColor === 'white'){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].fileNumber}.X`
                                     ];
                                 }
-                                if((chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1] && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].hasPiece) && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].pieceColor === 'white'){
+                                if((chessboardSituation[rankIndex + 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1] 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].hasPiece) 
+                                    && chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].pieceColor === 'white'){
                                     moves = [
                                         ...moves,
                                         `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
@@ -174,7 +215,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 while(currentRank !== 0){
                                     currentRank--;
                                     //if at any time the rook finds a piece of the same color as itself as it moves upwards, it cannot move any more
-                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor === pieceColor){
+                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece 
+                                        && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor === pieceColor){
                                         break;
                                     }
                                     //the rook can move to the next square upwards on condition that that square has no piece
@@ -187,7 +229,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                     //the rook can move to the next square upwards if the square is occupied by a piece of different color
                                     //but the rook cannot move upwards any further after that
-                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor !== pieceColor){
+                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece 
+                                        && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor !== pieceColor){
                                         moves = [
                                             ...moves,
                                             `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[fileIndex].fileNumber}.X`
@@ -204,7 +247,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 while(currentRank !== 7){
                                     currentRank++;
                                     //if at any time the rook finds a piece of the same color as itself as it moves downwards, it cannot move any more
-                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor === pieceColor){
+                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece 
+                                        && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor === pieceColor){
                                         break;
                                     }
                                     //the rook can move to the next square downwards on condition that that square has no piece
@@ -217,7 +261,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                     //the rook can move to the next square downwords if the square is occupied by a piece of different color
                                     //but the rook cannot move downwords any further after that
-                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor !== pieceColor){
+                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece 
+                                        && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor !== pieceColor){
                                         moves = [
                                             ...moves,
                                             `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[fileIndex].fileNumber}.X`
@@ -234,7 +279,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 while(currentFile !== 0){
                                     currentFile--;
                                     //if at any time the rook finds a piece of the same color as itself as it moves towards the left, it cannot move any more
-                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece 
+                                        && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                         break;
                                     }
                                     //the rook can move to the next square towards the left on condition that that square has no piece
@@ -247,7 +293,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                     //the rook can move to the next square towards the side if the square is occupied by a piece of different color
                                     //but the rook cannot move towards the side any further after that
-                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece 
+                                        && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                         moves = [
                                             ...moves,
                                             `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -264,7 +311,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 while(currentFile !== 7){
                                     currentFile++;
                                     //if at any time the rook finds a piece of the same color as itself as it moves towards the left, it cannot move any more
-                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece 
+                                        && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                         break;
                                     }
                                     //the rook can move to the next square towards the left on condition that that square has no piece
@@ -277,7 +325,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                     //the rook can move to the next square towards the side if the square is occupied by a piece of different color
                                     //but the rook cannot move towards the side any further after that
-                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece 
+                                        && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                         moves = [
                                             ...moves,
                                             `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -319,7 +368,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                         currentFile--;
 
                                         //if at any time the bishop finds a piece with the same color as itself while moving along main diagonal up, it cannot move any more
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                             break;
                                         }
 
@@ -333,7 +383,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                         //the bishop can move to the next square along main diagonal up if the square has an opponent piece
                                         //however, after this, the bishop cannot move anymore
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                             moves = [
                                                 ...moves,
                                                 `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -355,7 +406,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                         currentFile++;
 
                                         //if at any time the bishop finds a piece with the same color as itself while moving along other diagonal up, it cannot move any more
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                             break;
                                         }
 
@@ -369,7 +421,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                         //the bishop can move to the next square along other diagonal up if the square has an opponent piece
                                         //however, after this, the bishop cannot move anymore
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                             moves = [
                                                 ...moves,
                                                 `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -394,7 +447,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                         currentFile--;
 
                                         //if at any time the bishop finds a piece with the same color as itself while moving along main diagonal up, it cannot move any more
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                             break;
                                         }
 
@@ -408,7 +462,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                         //the bishop can move to the next square along main diagonal up if the square has an opponent piece
                                         //however, after this, the bishop cannot move anymore
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                             moves = [
                                                 ...moves,
                                                 `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -430,7 +485,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                         currentFile++;
 
                                         //if at any time the bishop finds a piece with the same color as itself while moving along other diagonal up, it cannot move any more
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                             break;
                                         }
 
@@ -444,7 +500,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                         //the bishop can move to the next square along other diagonal up if the square has an opponent piece
                                         //however, after this, the bishop cannot move anymore
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                             moves = [
                                                 ...moves,
                                                 `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -485,7 +542,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 while(currentRank !== 0){
                                     currentRank--;
                                     //if at any time the rook finds a piece of the same color as itself as it moves upwards, it cannot move any more
-                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor === pieceColor){
+                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece 
+                                        && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor === pieceColor){
                                         break;
                                     }
                                     //the rook can move to the next square upwards on condition that that square has no piece
@@ -498,7 +556,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                     //the rook can move to the next square upwards if the square is occupied by a piece of different color
                                     //but the rook cannot move upwards any further after that
-                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor !== pieceColor){
+                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece 
+                                        && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor !== pieceColor){
                                         moves = [
                                             ...moves,
                                             `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[fileIndex].fileNumber}.X`
@@ -515,7 +574,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 while(currentRank !== 7){
                                     currentRank++;
                                     //if at any time the rook finds a piece of the same color as itself as it moves downwards, it cannot move any more
-                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor === pieceColor){
+                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece 
+                                        && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor === pieceColor){
                                         break;
                                     }
                                     //the rook can move to the next square downwards on condition that that square has no piece
@@ -528,7 +588,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                     //the rook can move to the next square downwords if the square is occupied by a piece of different color
                                     //but the rook cannot move downwords any further after that
-                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor !== pieceColor){
+                                    if(chessboardSituation[currentRank].associatedFilesSituation[fileIndex].hasPiece 
+                                        && chessboardSituation[currentRank].associatedFilesSituation[fileIndex].pieceColor !== pieceColor){
                                         moves = [
                                             ...moves,
                                             `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[fileIndex].fileNumber}.X`
@@ -545,7 +606,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 while(currentFile !== 0){
                                     currentFile--;
                                     //if at any time the rook finds a piece of the same color as itself as it moves towards the left, it cannot move any more
-                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece 
+                                        && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                         break;
                                     }
                                     //the rook can move to the next square towards the left on condition that that square has no piece
@@ -558,7 +620,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                     //the rook can move to the next square towards the side if the square is occupied by a piece of different color
                                     //but the rook cannot move towards the side any further after that
-                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece 
+                                        && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                         moves = [
                                             ...moves,
                                             `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -575,7 +638,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                 while(currentFile !== 7){
                                     currentFile++;
                                     //if at any time the rook finds a piece of the same color as itself as it moves towards the left, it cannot move any more
-                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece 
+                                        && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                         break;
                                     }
                                     //the rook can move to the next square towards the left on condition that that square has no piece
@@ -588,7 +652,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                     //the rook can move to the next square towards the side if the square is occupied by a piece of different color
                                     //but the rook cannot move towards the side any further after that
-                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                    if(chessboardSituation[rankIndex].associatedFilesSituation[currentFile].hasPiece 
+                                        && chessboardSituation[rankIndex].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                         moves = [
                                             ...moves,
                                             `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -613,7 +678,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                         currentFile--;
 
                                         //if at any time the bishop finds a piece with the same color as itself while moving along main diagonal up, it cannot move any more
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                             break;
                                         }
 
@@ -627,7 +693,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                         //the bishop can move to the next square along main diagonal up if the square has an opponent piece
                                         //however, after this, the bishop cannot move anymore
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                             moves = [
                                                 ...moves,
                                                 `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -649,7 +716,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                         currentFile++;
 
                                         //if at any time the bishop finds a piece with the same color as itself while moving along other diagonal up, it cannot move any more
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                             break;
                                         }
 
@@ -663,7 +731,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                         //the bishop can move to the next square along other diagonal up if the square has an opponent piece
                                         //however, after this, the bishop cannot move anymore
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                             moves = [
                                                 ...moves,
                                                 `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -688,7 +757,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                         currentFile--;
 
                                         //if at any time the bishop finds a piece with the same color as itself while moving along main diagonal up, it cannot move any more
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                             break;
                                         }
 
@@ -702,7 +772,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                         //the bishop can move to the next square along main diagonal up if the square has an opponent piece
                                         //however, after this, the bishop cannot move anymore
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                             moves = [
                                                 ...moves,
                                                 `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[currentFile].fileNumber}.X`
@@ -724,7 +795,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
                                         currentFile++;
 
                                         //if at any time the bishop finds a piece with the same color as itself while moving along other diagonal up, it cannot move any more
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor === pieceColor){
                                             break;
                                         }
 
@@ -738,7 +810,8 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault) => {
 
                                         //the bishop can move to the next square along other diagonal up if the square has an opponent piece
                                         //however, after this, the bishop cannot move anymore
-                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
+                                        if(chessboardSituation[currentRank].associatedFilesSituation[currentFile].hasPiece 
+                                            && chessboardSituation[currentRank].associatedFilesSituation[currentFile].pieceColor !== pieceColor){
                                             moves = [
                                                 ...moves,
                                                 `${chessboardSituation[currentRank].rankNumber}.${chessboardSituation[currentRank].associatedFilesSituation[currentFile].fileNumber}.X`

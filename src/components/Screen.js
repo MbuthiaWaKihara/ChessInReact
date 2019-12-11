@@ -7,8 +7,7 @@ const Screen = ({turn}) => {
             <div style={{
                 width: '560px',
                 height: '100px',
-                backgroundColor: '#cecfba',
-                border: '1px solid black',
+                backgroundColor: '#c3d4d9',
             }}>
                 {
                     turn.color === 'white' ?
