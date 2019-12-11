@@ -8,7 +8,16 @@ import Screen from './Screen';
 
 //redducer function that changes player to play
 const changeTurn = (currentTurn, action) => {
-    return currentTurn;
+    switch(action.type){
+        case 'CHANGE_COLOR':
+            let color;
+            if(currentTurn.color === 'white') color = 'black';
+            else color = 'white';
+
+            return({color,});
+        default:
+            return currentTurn;
+    }
 }
 
 //variable that holds the initial board layout
@@ -58,6 +67,7 @@ const App = () =>
         <Chessboard 
             chessboardLayout={chessboardLayout}
             turn={turn}
+            switchTurn={dispatchTurn}
         />
         <button onClick={() => switchChessBoardLayout({type: 'EXCHANGE'})}>Flip Board</button>
      </>

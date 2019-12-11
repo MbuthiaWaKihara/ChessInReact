@@ -21,14 +21,18 @@ import '../styles/boardStyles.css';
 //scheduled to undergo numerous changes
 
 //the reducer function that transforms pieces
-//dummy for now
 const transformPiece = (pieceSituation, action) => {
-    return pieceSituation;
+    switch(action.type){
+        case 'UPDATE_PIECE_POSITION':
+            return action.value;
+        default:
+            return pieceSituation;
+    }
 }
 
 
 
-const Chessboard = ({chessboardLayout, turn}) => 
+const Chessboard = ({chessboardLayout, turn, switchTurn}) => 
 {
     //a variable that will store the pieces information when the app is first loaded
     const initialPiecesInfo = initialPieceInfo;
@@ -39,6 +43,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
     //state variable that will track the activity phase of the application
     const [activityPhase, setActivityPhase] = useState(
         {
+            pieceId: null,
             from: null,
             to: null,
         }
@@ -53,7 +58,13 @@ const Chessboard = ({chessboardLayout, turn}) =>
                     isColorSchemeDefault: false,
                     possibleSquares: action.possibleSquares,
                     targetSquare: action.targetSquare,
-                })
+                });
+            case 'RETURN_TO_DEFAULT':
+                return({
+                    isColorSchemeDefault: true,
+                });
+            default:
+                return currentScheme;
         }
     }
 
@@ -68,20 +79,22 @@ const Chessboard = ({chessboardLayout, turn}) =>
     //a variable that will store the chessboard info when the app is first loaded
     //or when a user changes the layout
     const chessboardInfo = createChessboardInfo(chessboardLayout, colorScheme);
-    console.log("chess board information", chessboardInfo);
+    // console.log("chess board information", chessboardInfo);
 
     //a variable that captures the chessboardSituation currently
     const chessboardSituation = determineChessboardSituation(chessboardInfo, currentPieceInfo);
-    console.log("chess board situation", chessboardSituation);
+    // console.log("chess board situation", chessboardSituation);
 
     //a variable that stores all possible moves for all the pieces inside the current chessboard situation
     const possibleMoves = generatePossibleMoves(chessboardSituation, chessboardLayout.default);
-    console.log("possible moves", possibleMoves);
+    // console.log("possible moves", possibleMoves);
 
     //callbacks
     //handles action when a user makes an interaction with the chessboard
     const launchPlayerActivity = (rankNumber, fileNumber, pieceInfo) => {
+
         if(!activityPhase.from && !activityPhase.to){
+
             //check whether the player is moving a piece of the turn's color
             if(turn.color === pieceInfo.color){
 
@@ -93,7 +106,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
                                 (square, squareId) => {
                                     possibleSquares = [
                                         ...possibleSquares,
-                                        square.substring(0,3)
+                                        square
                                     ]
                                 }
                             );
@@ -102,8 +115,128 @@ const Chessboard = ({chessboardLayout, turn}) =>
                 );
 
                 setColorScheme({type: 'POSSIBLE_MOVES', targetSquare: `${rankNumber}.${fileNumber}`, possibleSquares,});
+                setActivityPhase({...activityPhase, from:  `${rankNumber}.${fileNumber}`, pieceId: pieceInfo.id});
             }
         }
+
+        if(activityPhase.from && !activityPhase.to){
+
+            //the user clicked on an empty square, they want to move the from piece there
+            if(!pieceInfo.id){
+                let targetPiece = activityPhase.from;
+                let currentPieces = currentPieceInfo;
+                let isSquareWithinPossible = false;
+
+                //is the square within possible moves?
+                possibleMoves.forEach(
+                    (piece, pieceIndex) => {
+                        if(piece.pieceId === activityPhase.pieceId){
+                            piece.moves.forEach(
+                                (move, moveIndex) => {
+                                    if(move === `${rankNumber}.${fileNumber}`){
+                                        isSquareWithinPossible = true;
+                                    }
+                                }
+                            );
+                        }
+                    }
+                );
+                
+                if(isSquareWithinPossible){
+                    currentPieceInfo.forEach(
+                        (piece, pieceIndex) => {
+                            if(`${piece.positionOnBoard.rankNumber}.${piece.positionOnBoard.fileNumber}` === targetPiece){
+                                currentPieces[pieceIndex].positionOnBoard.rankNumber = rankNumber;
+                                currentPieces[pieceIndex].positionOnBoard.fileNumber = fileNumber;
+                                currentPieces[pieceIndex].noOfMoves = currentPieces[pieceIndex].noOfMoves + 1;
+                            }
+                        }
+                    );
+
+                    changePieceInfo({type: 'UPDATE_PIECE_POSITION', value: currentPieces});
+                    // console.log("current pieces", currentPieceInfo);
+                    setColorScheme({type: 'RETURN_TO_DEFAULT',});
+                    setActivityPhase({from: null, to: null});
+                    switchTurn({type: 'CHANGE_COLOR'});
+                }else{
+                    setColorScheme({type: 'RETURN_TO_DEFAULT',});
+                    setActivityPhase({from: null, to: null});
+                }     
+            }
+
+            //the user clicks on a square that has an opponent piece. He captures it
+            if(pieceInfo.color !== turn.color && pieceInfo.id){
+                let targetPiece = activityPhase.from;
+                let currentPieces = currentPieceInfo;
+                let isSquareWithinPossible = false;
+
+                //is the square within possible moves?
+                possibleMoves.forEach(
+                    (piece, pieceIndex) => {
+                        if(piece.pieceId === activityPhase.pieceId){
+                            piece.moves.forEach(
+                                (move, moveIndex) => {
+                                    if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
+                                        isSquareWithinPossible = true;
+                                    }
+                                }
+                            );
+                        }
+                    }
+                );
+
+                if(isSquareWithinPossible){
+                    currentPieceInfo.forEach(
+                        (piece, pieceIndex) => {
+                            if(`${piece.positionOnBoard.rankNumber}.${piece.positionOnBoard.fileNumber}` === `${rankNumber}.${fileNumber}`){
+                                currentPieces[pieceIndex].hasBeenCaptured = true;
+                            }
+                            if(`${piece.positionOnBoard.rankNumber}.${piece.positionOnBoard.fileNumber}` === targetPiece){
+                                currentPieces[pieceIndex].positionOnBoard.rankNumber = rankNumber;
+                                currentPieces[pieceIndex].positionOnBoard.fileNumber = fileNumber;
+                                currentPieces[pieceIndex].noOfMoves = currentPieces[pieceIndex].noOfMoves + 1;
+                            }
+                        }
+                    );
+
+                    changePieceInfo({type: 'UPDATE_PIECE_POSITION', value: currentPieces});
+                    console.log("current pieces", currentPieceInfo);
+                    setColorScheme({type: 'RETURN_TO_DEFAULT',});
+                    setActivityPhase({from: null, to: null});
+                    switchTurn({type: 'CHANGE_COLOR'});
+                }else{
+                    setColorScheme({type: 'RETURN_TO_DEFAULT',});
+                    setActivityPhase({from: null, to: null});
+                }
+              
+            }
+
+
+            //the user clicks on a piece that is his
+            if(pieceInfo.color === turn.color && pieceInfo.id){
+            
+                let possibleSquares = [];
+                possibleMoves.forEach(
+                    (piece, pieceIndex) => {
+                        if(piece.pieceId === pieceInfo.id){
+                            piece.moves.forEach(
+                                (square, squareId) => {
+                                    possibleSquares = [
+                                        ...possibleSquares,
+                                        square
+                                    ];
+                                }
+                            );
+                        }
+                    }
+                );
+
+                setColorScheme({type: 'POSSIBLE_MOVES', targetSquare: `${rankNumber}.${fileNumber}`, possibleSquares,});
+                setActivityPhase({...activityPhase, from:  `${rankNumber}.${fileNumber}`, pieceId: pieceInfo.id});
+            }
+        }
+
+        //launchPlayerActivity is here
     }
     
     const displayBoard = chessboardInfo.map(
@@ -170,7 +303,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
                                 onClick={() => launchPlayerActivity(chessboardInfo[rankIndex].rankNumber, chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber, {id, piece, color})}
                                 className={chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass}
                                 key={`${rankIndex} ${fileIndex}`}
-                                style={{border: '1px solid black', width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
+                                style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
                                 ><Pawn pieceColor={color} />
                                 </div>
                             );
@@ -182,7 +315,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
                                 onClick={() => launchPlayerActivity(chessboardInfo[rankIndex].rankNumber, chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber, {id, piece, color})}
                                 className={chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass}
                                 key={`${rankIndex} ${fileIndex}`}
-                                style={{border: '1px solid black', width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
+                                style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
                                 ><King pieceColor={color} />
                                 </div>
                             );
@@ -194,7 +327,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
                                 onClick={() => launchPlayerActivity(chessboardInfo[rankIndex].rankNumber, chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber, {id, piece, color})}
                                 className={chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass}
                                 key={`${rankIndex} ${fileIndex}`}
-                                style={{border: '1px solid black', width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
+                                style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
                                 ><Queen pieceColor={color} />
                                 </div>
                             );
@@ -206,7 +339,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
                                 onClick={() => launchPlayerActivity(chessboardInfo[rankIndex].rankNumber, chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber, {id, piece, color})}
                                 className={chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass}
                                 key={`${rankIndex} ${fileIndex}`}
-                                style={{border: '1px solid black', width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
+                                style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
                                 ><Knight pieceColor={color} />
                                 </div>
                             );
@@ -218,7 +351,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
                                 onClick={() => launchPlayerActivity(chessboardInfo[rankIndex].rankNumber, chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber, {id, piece, color})}
                                 className={chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass}
                                 key={`${rankIndex} ${fileIndex}`}
-                                style={{border: '1px solid black', width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
+                                style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
                                 ><Bishop pieceColor={color} />
                                 </div>
                             );
@@ -230,7 +363,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
                                 onClick={() => launchPlayerActivity(chessboardInfo[rankIndex].rankNumber, chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber, {id, piece, color})}
                                 className={chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass}
                                 key={`${rankIndex} ${fileIndex}`}
-                                style={{border: '1px solid black', width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
+                                style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
                                 ><Rook pieceColor={color} />
                                 </div>
                             );
@@ -241,7 +374,7 @@ const Chessboard = ({chessboardLayout, turn}) =>
                             onClick={() => launchPlayerActivity(chessboardInfo[rankIndex].rankNumber, chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber, {id: null})}
                             className={chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass}
                             key={`${rankIndex} ${fileIndex}`}
-                            style={{border: '1px solid black', width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
+                            style={{width: '70px', height: '70px', backgroundColor: chessboardInfo[rankIndex].associatedFiles[fileIndex].squareClass === 'normal' ? chessboardInfo[rankIndex].associatedFiles[fileIndex].color : null,}}
                             >
                             </div>
                         );

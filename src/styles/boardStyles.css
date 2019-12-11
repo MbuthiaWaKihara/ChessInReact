@@ -1,6 +1,17 @@
 .selectedInMove {
-    background-color: #a0ff61;
+    background-color: #c3d4d9;
 }
 .amongPossibleSquares {
-    background-color: #fffc69;
+    background-color: #7fc7bf;
+    border: 1px solid #ccfbfc;
+    border-radius: 5px;
 }
+.amongPossibleCaptures {
+    background-color: #adadad;
+    border: 1px solid #a0ff61;
+    border-radius: 5px;
+}
+.normal {
+    border: none;
+}
+

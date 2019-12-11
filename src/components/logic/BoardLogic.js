@@ -2,13 +2,14 @@
 export const createChessboardInfo = (chessboardLayout, colorScheme) => {
 
     //a variable that will store the chessboard when the app is first loaded
-    //or when a user changes the layout
+    //or when a user changes the layout or color scheme
     let chessboardInfo = [];
     let associatedFilesHolder = [];
     let color;
     let initialColor;
     let squareClass;
 
+    //first form a chessboard array (an array of 8 members with each member having an array property with 8 members 8X8)
     for(let currentRank = 0; currentRank < 8; currentRank++){
 
         //prepare an array that holds info about the files associated with current rank
@@ -36,7 +37,7 @@ export const createChessboardInfo = (chessboardLayout, colorScheme) => {
         associatedFilesHolder = [];
     }
 
-
+    //then conditionally color the chessboard according to the incoming color scheme
     let chessboardCopy = chessboardInfo
     chessboardCopy.forEach(
         (rankInfo, rankIndex) => {
@@ -99,16 +100,29 @@ export const createChessboardInfo = (chessboardLayout, colorScheme) => {
 
                             colorScheme.possibleSquares.forEach(
                                 (square, squareIndex) => {
-                                    if(`${chessboardInfo[rankIndex].rankNumber}.${chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber}` === square){
+                                    if(`${chessboardInfo[rankIndex].rankNumber}.${chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber}` === square.substring(0,3)){
                                         squareClass = 'amongPossibleSquares';
                                         chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
                                             ...fileInfo,
                                             squareClass,
                                         }
                                     }
+
+                                    let capture = square.search("X")
+                                    if(capture !== -1){
+                                        if(`${chessboardInfo[rankIndex].rankNumber}.${chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber}` === square.substring(0,3)){
+                                            squareClass = 'amongPossibleCaptures';
+                                            chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
+                                                ...fileInfo,
+                                                squareClass,
+                                            }
+                                        }
+                                    }
                                 }
                             );
                         }
+
+                        //not isColorSchemeDefault is here
                     }
                 }
             );
