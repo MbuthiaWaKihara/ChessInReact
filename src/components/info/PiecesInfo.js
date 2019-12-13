@@ -159,7 +159,7 @@ export const initialPieceInfo = [
         pieceId: 15,
         pieceName: 'King',
         pieceColor: 'white',
-        hasBeenCaptured: true,
+        hasBeenCaptured: false,
         noOfMoves: 0,
         positionOnBoard: {
             rankNumber: 1,
@@ -170,7 +170,7 @@ export const initialPieceInfo = [
         pieceId: 16,
         pieceName: 'King',
         pieceColor: 'black',
-        hasBeenCaptured: true,
+        hasBeenCaptured: false,
         noOfMoves: 0,
         positionOnBoard: {
             rankNumber: 8,

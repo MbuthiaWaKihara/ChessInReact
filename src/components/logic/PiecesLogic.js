@@ -1,7 +1,7 @@
 
 //this method will generate an array of possible moves for every piece currently on the board
 //the method relies on the current board situation
-export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, currentPlayer) => {
+export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, history) => {
     let possibleMoves = [];
 
     chessboardSituation.forEach(
@@ -9,7 +9,7 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, curr
             rankInfo.associatedFilesSituation.forEach(
                 (fileInfo, fileIndex) => {
                     
-                    if(fileInfo.hasPiece && fileInfo.pieceColor === currentPlayer){//the piece in this square is candidate for having possible moves
+                    if(fileInfo.hasPiece){//the piece in this square is candidate for having possible moves
                         let pieceId = fileInfo.pieceId;
                         let pieceName = fileInfo.pieceName;
                         let pieceColor = fileInfo.pieceColor;
@@ -38,6 +38,7 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, curr
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex-1].associatedFilesSituation[fileIndex].fileNumber}`
                                     ];
                                 }
+
                                 //the pawn can move a square in the front rank and any of the front side files on condition that those squares exist and they have a black piece
                                 if((chessboardSituation[rankIndex - 1] 
                                     && chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1] 
@@ -57,6 +58,37 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, curr
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
                                     ];
                                 }
+
+                                //the pawn can capture a black pawn en passant on condition that the white pawn is in rank index 3 and the to be captured pawn
+                                //is in an adjacent file and it just moved there
+                                //left
+                                if(rankIndex === 3
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1]
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].hasPiece
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceName === 'Pawn'
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceMoves === 1){
+                                        //check if the pawn adjacent to the potential en passant capturer is the last thing moved there
+                                        if(history[history.length - 1][history[history.length - 1].length -1].id ===  chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceId){
+                                            moves = [
+                                                ...moves,
+                                                `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].fileNumber}.E.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceId}`
+                                            ];
+                                        }
+                                    }
+                                //right
+                                if(rankIndex === 3
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1]
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].hasPiece
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceName === 'Pawn'
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceMoves === 1){
+                                        //check if the pawn adjacent to the potential en passant capturer is the last thing moved there
+                                        if(history[history.length - 1][history[history.length - 1].length -1].id ===  chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceId){
+                                            moves = [
+                                                ...moves,
+                                                `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].fileNumber}.E.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceId}`
+                                            ];
+                                        }
+                                    }
 
                             }else{
                                 //the pawn can move two squares infront on condition that it has not been moved before and that square has no piece
@@ -96,6 +128,37 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, curr
                                         `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
                                     ];
                                 }
+
+                                //the pawn can capture a black pawn en passant on condition that the white pawn is in rank index 4 and the to be captured pawn
+                                //is in an adjacent file and it just moved there
+                                //left
+                                if(rankIndex === 4
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1]
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].hasPiece
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceName === 'Pawn'
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceMoves === 1){
+                                        //check if the pawn adjacent to the potential en passant capturer is the last thing moved there
+                                        if(history[history.length - 1][history[history.length - 1].length -1].id ===  chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceId){
+                                            moves = [
+                                                ...moves,
+                                                `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].fileNumber}.E.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceId}`
+                                            ];
+                                        }
+                                    }
+                                //right
+                                if(rankIndex === 4
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1]
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].hasPiece
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceName === 'Pawn'
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceMoves === 1){
+                                        //check if the pawn adjacent to the potential en passant capturer is the last thing moved there
+                                        if(history[history.length - 1][history[history.length - 1].length -1].id ===  chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceId){
+                                            moves = [
+                                                ...moves,
+                                                `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].fileNumber}.E.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceId}`
+                                            ];
+                                        }
+                                    }
                             }
 
                             possibleMoves = [
@@ -151,6 +214,37 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, curr
                                         `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
                                     ];
                                 }
+
+                                //the pawn can capture a white pawn en passant on condition that the black pawn is in rank index 3 and the to be captured pawn
+                                //is in an adjacent file and it just moved there
+                                //left
+                                if(rankIndex === 3
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1]
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].hasPiece
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceName === 'Pawn'
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceMoves === 1){
+                                        //check if the pawn adjacent to the potential en passant capturer is the last thing moved there
+                                        if(history[history.length - 1][history[history.length - 1].length -1].id ===  chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceId){
+                                            moves = [
+                                                ...moves,
+                                                `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].fileNumber}.E.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceId}`
+                                            ];
+                                        }
+                                    }
+                                //right
+                                if(rankIndex === 3
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1]
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].hasPiece
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceName === 'Pawn'
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceMoves === 1){
+                                        //check if the pawn adjacent to the potential en passant capturer is the last thing moved there
+                                        if(history[history.length - 1][history[history.length - 1].length -1].id ===  chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceId){
+                                            moves = [
+                                                ...moves,
+                                                `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].fileNumber}.E.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceId}`
+                                            ];
+                                        }
+                                    }
                             }else{
                                 //the pawn can move two squares infront on condition that it has not been moved before and that square has no piece
                                 if(pieceMoves === 0 
@@ -189,6 +283,37 @@ export const generatePossibleMoves = (chessboardSituation, isLayoutDefault, curr
                                         `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].fileNumber}.X`
                                     ];
                                 }
+
+                                //the pawn can capture a white pawn en passant on condition that the black pawn is in rank index 4 and the to be captured pawn
+                                //is in an adjacent file and it just moved there
+                                //left
+                                if(rankIndex === 4
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1]
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].hasPiece
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceName === 'Pawn'
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceMoves === 1){
+                                        //check if the pawn adjacent to the potential en passant capturer is the last thing moved there
+                                        if(history[history.length - 1][history[history.length - 1].length -1].id ===  chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceId){
+                                            moves = [
+                                                ...moves,
+                                                `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].fileNumber}.E.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceId}`
+                                            ];
+                                        }
+                                    }
+                                //right
+                                if(rankIndex === 4
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1]
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].hasPiece
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceName === 'Pawn'
+                                    && chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceMoves === 1){
+                                        //check if the pawn adjacent to the potential en passant capturer is the last thing moved there
+                                        if(history[history.length - 1][history[history.length - 1].length -1].id ===  chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceId){
+                                            moves = [
+                                                ...moves,
+                                                `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].fileNumber}.E.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceId}`
+                                            ];
+                                        }
+                                    }
                             }
 
                             possibleMoves = [

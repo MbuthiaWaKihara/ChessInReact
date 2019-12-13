@@ -33,11 +33,14 @@
     border: none;
 }
 
-.normal:hover {
+/* .normal:hover {
     opacity: .6;
-}
+} */
 
 .normal div{
     display: none;
 }
 
+.check{
+    background-color: #cf7872;
+}

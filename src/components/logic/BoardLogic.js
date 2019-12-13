@@ -78,6 +78,12 @@ export const createChessboardInfo = (chessboardLayout, colorScheme) => {
                                     ...fileInfo,
                                     squareClass,
                                 }
+                            }else  if(`${chessboardInfo[rankIndex].rankNumber}.${chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber}` === colorScheme.targetCheckSquare){
+                                squareClass = 'check';
+                                chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
+                                    ...fileInfo,
+                                    squareClass,
+                                }
                             }else{
                                squareClass = 'normal';
                                 if(fileIndex === 0){
@@ -97,6 +103,7 @@ export const createChessboardInfo = (chessboardLayout, colorScheme) => {
                                         squareClass,
                                     }
                             }
+  
 
                             colorScheme.possibleSquares.forEach(
                                 (square, squareIndex) => {
@@ -133,6 +140,34 @@ export const createChessboardInfo = (chessboardLayout, colorScheme) => {
                                 }
                             );
                         }
+
+                       if(colorScheme.type === 'SHOW_CHECK'){
+                            if(`${chessboardInfo[rankIndex].rankNumber}.${chessboardInfo[rankIndex].associatedFiles[fileIndex].fileNumber}` === colorScheme.targetCheckSquare){
+                                squareClass = 'check';
+                                chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
+                                    ...fileInfo,
+                                    squareClass,
+                                }
+                            }else{
+                                squareClass = 'normal';
+                                 if(fileIndex === 0){
+                                     color = initialColor;
+                                 }else{
+                                     if(fileIndex % 2 === 1){
+                                         if(initialColor === '#4edbde') color = '#ccfbfc';
+                                         if(initialColor === '#ccfbfc') color = '#4edbde';
+                                     }else{
+                                         color = initialColor;
+                                     }
+                                     }
+ 
+                                     chessboardInfo[rankIndex].associatedFiles[fileIndex] = {
+                                         ...fileInfo,
+                                         color,
+                                         squareClass,
+                                     }
+                             }
+                       }
 
                         //not isColorSchemeDefault is here
                     }
