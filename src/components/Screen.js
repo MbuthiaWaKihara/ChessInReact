@@ -5,9 +5,13 @@ const Screen = ({turn}) => {
     return(
         <>
             <div style={{
-                width: '560px',
+                width: '562px',
                 height: '100px',
-                backgroundColor: '#c3d4d9',
+                backgroundColor: '#f0fcfc',
+                borderTop: '1px solid #000000',
+                borderLeft: '1px solid #000000',
+                borderRight: '1px solid #000000',
+                // borderRadius:'10px 10px 0px 0px'
             }}>
                 {
                     turn.color === 'white' ?

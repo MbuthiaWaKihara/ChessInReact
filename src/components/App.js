@@ -5,6 +5,7 @@ import React,{
 } from 'react';
 import Chessboard from './Chessboard';
 import Screen from './Screen';
+import PromoteOptions from './PromoteOptions';
 import '../styles/appStyles.css';
 
 //this is the outer app component. It manages the board page
@@ -80,15 +81,18 @@ const App = () =>
 
     return(
      <>
+        <PromoteOptions/>
         <Screen
-            turn={turn}
+                turn={turn}
         />
+                    
         <Chessboard 
             chessboardLayout={chessboardLayout}
             turn={turn}
             switchTurn={dispatchTurn}
             moveCount={moveCount}
         />
+
         <button
         onClick={() => switchChessBoardLayout({type: 'EXCHANGE'})}
         className="options"

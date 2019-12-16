@@ -5,7 +5,7 @@
 export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault) => {
     let kingInfo = [];
     let kingPossibleMoves = [];
-    let isKingInCheck = {status:false, id:null};
+    let isKingInCheck = {status:false, id:null, attackers: []};
 
     chessboardSituation.forEach(
         (rankInfo, rankIndex) => {
@@ -19,14 +19,16 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                         let pieceFile = fileInfo.positionOnBoard.fileNumber;
                         let moves = [];
 
+
+                        let attackers = [];//save the ids of the attackers of the king
                         //is the king in check?
                         possibleMoves.forEach(
-                            (piece, pieceId) => {
+                            (piece, pieceIndex) => {
                                 piece.moves.forEach(
                                     (move, moveId) => {
                                         if(move.substring(0,3) === `${rankInfo.rankNumber}.${fileInfo.fileNumber}`
                                         && piece.pieceColor !== fileInfo.pieceColor){
-                                            isKingInCheck = {status:true, id:fileInfo.pieceId};
+                                            isKingInCheck = {status:true, id:fileInfo.pieceId, attackers: [...attackers, piece.pieceId]};
                                         }
                                     }
                                 );
@@ -379,7 +381,7 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                                     if(!isUnderPressure){
                                                         moves = [
                                                             ...moves,
-                                                            `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 2].fileNumber}.C.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 3].pieceId}`
+                                                            `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 2].fileNumber}.Cs.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 3].pieceId}`
                                                         ];
                                                     }
                                                 }
@@ -411,7 +413,7 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                                     if(!isUnderPressure){
                                                         moves = [
                                                             ...moves,
-                                                            `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 2].fileNumber}.C.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 3].pieceId}`
+                                                            `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 2].fileNumber}.Cs.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 3].pieceId}`
                                                         ];
                                                     }
                                                 }
@@ -449,7 +451,7 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                                     if(!isUnderPressure){
                                                         moves = [
                                                             ...moves,
-                                                            `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 2].fileNumber}.C.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 4].pieceId}`
+                                                            `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 2].fileNumber}.Cl.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 4].pieceId}`
                                                         ];
                                                     }
                                                 }
@@ -484,7 +486,7 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                                     if(!isUnderPressure){
                                                         moves = [
                                                             ...moves,
-                                                            `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 2].fileNumber}.C.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 4].pieceId}`
+                                                            `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 2].fileNumber}.Cl.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 4].pieceId}`
                                                         ];
                                                     }
                                                 }
@@ -498,6 +500,10 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                                 pieceMoves,
                                                 pieceFile,
                                                 pieceRank,
+                                                positionOnBoard: {
+                                                    rankNumber: pieceRank,
+                                                    fileNumber: pieceFile
+                                                },
                                                 moves,
                                             }
                                         ];
@@ -515,4 +521,38 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
     kingInfo[1] = kingPossibleMoves;
 
     return kingInfo;
+}
+
+//this function will refine the king possible moves to ensure that the kings
+//cannot get a square adjacent to each other 
+export const refineKingMoves = (kingPossibleMoves) => {
+    let newKingPossibleMoves = [];
+
+    let firstKingMoves = [];
+    let secondKingMoves = [];
+
+    let initialFirst = kingPossibleMoves[0].moves;
+    let initialOther = kingPossibleMoves[1].moves;
+
+    initialFirst.forEach(
+        (move, moveIndex) => {
+            if(!initialOther.includes(move)){
+                firstKingMoves.push(move);
+            }
+        }
+    );
+
+    initialOther.forEach(
+        (move, moveIndex) => {
+            if(!initialFirst.includes(move)){
+                secondKingMoves.push(move);
+            }
+        }
+    );
+    
+
+    newKingPossibleMoves.push({...kingPossibleMoves[0], moves:firstKingMoves});
+    newKingPossibleMoves.push({...kingPossibleMoves[1], moves:secondKingMoves});
+
+    return newKingPossibleMoves;
 }
