@@ -35,7 +35,7 @@ const transformPiece = (pieceSituation, action) => {
 }
 
 
-const Chessboard = ({chessboardLayout, turn, switchTurn}) => 
+const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, promotionPiece, setPromotionPiece}) => 
 {
     //a variable that will store the pieces information when the app is first loaded
     const initialPiecesInfo = initialPieceInfo;
@@ -96,7 +96,7 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
 
     //a variable that captures the chessboardSituation currently
     const chessboardSituation = determineChessboardSituation(chessboardInfo, currentPieceInfo);
-    console.log("chess board situation", chessboardSituation);
+    // console.log("chess board situation", chessboardSituation);
 
     //a reducer method that will add a move to history
     const addToHistory = (currentHistory, action) => {
@@ -130,11 +130,11 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
     possibleMoves.push(kingPossibleMoves[0]);
     possibleMoves.push(kingPossibleMoves[1]);
     // console.log("check info", isKingInCheck);
-    console.log("possible moves", possibleMoves);
+    // console.log("possible moves", possibleMoves);
 
-    //show a king that is in check whenever turn changes
     useEffect(
         () => {
+            //change the board's color scheme whenever a king is in check
             if(isKingInCheck.status){
                 chessboardSituation.forEach(
                     (rankInfo, rankIndex) => {
@@ -142,6 +142,7 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
                             (fileInfo, fileIndex) => {
                                 if(fileInfo.pieceId === isKingInCheck.id){
                                     setColorScheme({type: 'SHOW_CHECK', targetCheckSquare: `${rankInfo.rankNumber}.${fileInfo.fileNumber}`,});
+                                    
                                 }
                             }
                         );
@@ -150,6 +151,72 @@ const Chessboard = ({chessboardLayout, turn, switchTurn}) =>
             }
         },[turn]
     );
+    
+    //check whether there is a pawn for promotion
+    useEffect(
+        () => {
+            //loop the current chessboard situation to see if there is a pawn on the eigth or the first rank
+            chessboardSituation.forEach(
+                (rankInfo, rankIndex) => {
+                    if(rankInfo.rankNumber ===  1 || rankInfo.rankNumber === 8){
+                        rankInfo.associatedFilesSituation.forEach(
+                            (fileInfo, fileIndex) => {
+                                if(fileInfo.hasPiece && fileInfo.pieceName === 'Pawn'){
+                                    
+                                    changePromotionState('block', fileInfo.pieceColor);
+                                    if(turn.color !== fileInfo.pieceColor){
+                                        switchTurn({type: 'CHANGE_COLOR'});
+                                    }
+                                }
+                            }
+                        );
+                    }
+                } 
+            );
+
+        },[activityPhase]
+    );
+
+    //whenever there is a promotion piece, update the chessboard and return the promotion piece to null
+    useEffect(
+        () => {
+             //change the pieces when the promotion piece is set
+             if(promotionPiece){
+                let copyPieceInfo = currentPieceInfo;
+
+                currentPieceInfo.forEach(
+                    (piece,pieceIndex) => {
+                        if((piece.positionOnBoard.rankNumber === 1 || piece.positionOnBoard.rankNumber === 8)
+                        && piece.pieceColor === turn.color
+                        && piece.pieceName === 'Pawn'){
+                            copyPieceInfo[pieceIndex].pieceName = promotionPiece;
+                        }
+                    }
+                );
+                
+                changePieceInfo({type: 'UPDATE_PIECE_POSITION', value: copyPieceInfo});
+                switchTurn({type: 'CHANGE_COLOR'});
+                setPromotionPiece(null);
+            }
+
+            //a player cannot play elsewhere if he has to choose a piece
+             //loop the current chessboard situation to see if there is a pawn on the eigth or the first rank
+             chessboardSituation.forEach(
+                (rankInfo, rankIndex) => {
+                    if(rankInfo.rankNumber ===  1 || rankInfo.rankNumber === 8){
+                        rankInfo.associatedFilesSituation.forEach(
+                            (fileInfo, fileIndex) => {
+                                if(fileInfo.hasPiece && fileInfo.pieceName === 'Pawn'){
+                                    possibleMoves = [];
+                                }
+                            }
+                        );
+                    }
+                } 
+            );
+        }
+    );
+
 
     //a state variable that will track whenever a checkmate occurs
     const [checkmate, setCheckmate] = useState(false);

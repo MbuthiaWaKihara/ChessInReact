@@ -66,6 +66,32 @@ const App = () =>
     //state variable that keeps track of the movecount
     const [moveCount, setMoveCount] = useState(0);
 
+    //state variable that keeps track of the promotion display status and piece color
+    const [promotion, setPromotion] = useState({
+        displayStatus: 'none',
+        pieceColor: 'white'
+    });
+
+    //a callback function that can alter the promotion state
+    const changePromotionState = (displayStatus, pieceColor) => {
+        setPromotion({
+            displayStatus,
+            pieceColor,
+        });
+    }
+
+    //a state variable that keeps track of the promotion piece that has been selected
+    const [promotionPiece, setPromotionPiece] = useState(null);
+
+    //a callback function that can change this promotion piece state
+    const selectPromotionPiece = pieceName => {
+        setPromotion({
+            ...promotion,
+            displayStatus: 'none',
+        });
+        setPromotionPiece(pieceName);
+    }
+
     //update the movecount whenever turn is white
     useEffect(
         () => {
@@ -81,7 +107,11 @@ const App = () =>
 
     return(
      <>
-        <PromoteOptions/>
+        <PromoteOptions
+            displayStatus={promotion.displayStatus}
+            pieceColor={promotion.pieceColor}
+            selectPromotionPiece={selectPromotionPiece}
+        />
         <Screen
                 turn={turn}
         />
@@ -91,6 +121,9 @@ const App = () =>
             turn={turn}
             switchTurn={dispatchTurn}
             moveCount={moveCount}
+            changePromotionState={changePromotionState}
+            promotionPiece={promotionPiece}
+            setPromotionPiece={setPromotionPiece}
         />
 
         <button

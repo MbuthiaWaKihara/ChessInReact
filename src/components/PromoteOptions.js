@@ -7,28 +7,34 @@ import Knight from './pieces/Knight';
 import '../styles/boardStyles.css';
 
 
-const PromoteOptions = () => {
+const PromoteOptions = ({displayStatus, pieceColor, selectPromotionPiece}) => {
+    // console.log("display status", displayStatus);
+    // console.log("piece color", pieceColor);
     return(
         <div 
         className="promotionContainer"
         style={{
-            display: 'none',
+            display: displayStatus,
         }}
         >
             <div 
             className="promotionSquare"
-            ><Queen pieceColor="black"/></div>
+            onClick={() => selectPromotionPiece('Queen')}
+            ><Queen pieceColor={pieceColor}/></div>
             <div 
             className="promotionSquare"
-            ><Rook pieceColor="black"/></div>
+            onClick={() => selectPromotionPiece('Rook')}
+            ><Rook pieceColor={pieceColor}/></div>
             <div 
             className="promotionSquare"
-            ><Bishop pieceColor="black"/></div>
+            onClick={() => selectPromotionPiece('Bishop')}
+            ><Bishop pieceColor={pieceColor}/></div>
             <div 
             className="promotionSquare"
-            ><Knight pieceColor="black"/></div>
+            onClick={() => selectPromotionPiece('Knight')}
+            ><Knight pieceColor={pieceColor}/></div>
         </div>
     );
 }
 
-export default PromoteOptions;
+export default React.memo(PromoteOptions);

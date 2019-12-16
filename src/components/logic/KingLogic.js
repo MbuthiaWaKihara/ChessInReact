@@ -495,6 +495,7 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                         kingPossibleMoves = [
                                             ...kingPossibleMoves, 
                                             {
+                                                pieceName: 'King',
                                                 pieceId,
                                                 pieceColor,
                                                 pieceMoves,
