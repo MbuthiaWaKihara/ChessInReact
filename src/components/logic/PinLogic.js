@@ -4,7 +4,10 @@ import {generatePossibleMoves} from './PiecesLogic';
 //this function will tell the chessboard whether 
 //a piece intending to be moved by a player is pinned or not
 export const isMyPiecePinned = (targetRank, targetFile, chessboardSituation, isLayoutDefault, history) => {
-    let pieceIsPinned = false;
+    let pieceIsPinned = {
+        status: false,
+        attackers: [],
+    }
     let copySituation = chessboardSituation;
 
     chessboardSituation.forEach(
@@ -28,7 +31,10 @@ export const isMyPiecePinned = (targetRank, targetFile, chessboardSituation, isL
     let possibleMoves = generatePossibleMoves(copySituation, isLayoutDefault, history);
     let isKingInCheck = kingTracker(possibleMoves, copySituation, isLayoutDefault);
     if(isKingInCheck[0].status){
-        pieceIsPinned = true;
+        pieceIsPinned = {
+            status: isKingInCheck[0].status,
+            attackers: isKingInCheck[0].attackers,
+        }
     }
     return pieceIsPinned;
 }

@@ -16,7 +16,7 @@ import {
 } from './logic/BoardLogic';
 import {generatePossibleMoves} from './logic/PiecesLogic';
 import {kingTracker, refineKingMoves} from './logic/KingLogic';
-import {canMyPieceHelp, canMyKingCapture} from './logic/InCheckLogic';
+import {canMyPieceHelp, canMyKingBeHere} from './logic/InCheckLogic';
 import '../styles/boardStyles.css';
 import { isMyPiecePinned } from './logic/PinLogic';
 
@@ -117,20 +117,21 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
     }
     //a state variable that will hold an array of moves already made
     const [history, updateHistory] = useReducer(addToHistory, []);
-    console.log("history", history);
+    // console.log("history", history);
 
     //a variable that stores all possible moves for all the pieces inside the current chessboard situation
     let possibleMoves = generatePossibleMoves(chessboardSituation, chessboardLayout.default, history);
     //refine these possible moves
     // const possibleMoves = refinePossibleMoves(rawPossibleMoves, chessboardSituation, chessboardLayout.default, history);
     //get some info about the kings before display
-    const [isKingInCheck, rawKingPossibleMoves] = kingTracker(possibleMoves, chessboardSituation, chessboardLayout.default);
-    const kingPossibleMoves = refineKingMoves(rawKingPossibleMoves);
-    // console.log("king possible moves", kingPossibleMoves);
+    let [isKingInCheck, rawKingPossibleMoves] = kingTracker(possibleMoves, chessboardSituation, chessboardLayout.default);
+    let kingPossibleMoves = refineKingMoves(rawKingPossibleMoves);
+    console.log("king possible moves", kingPossibleMoves);
+
     possibleMoves.push(kingPossibleMoves[0]);
     possibleMoves.push(kingPossibleMoves[1]);
     // console.log("check info", isKingInCheck);
-    // console.log("possible moves", possibleMoves);
+    console.log("possible moves", possibleMoves);
 
     useEffect(
         () => {
@@ -235,22 +236,64 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                         possibleMoves.forEach(
                             (piece, pieceIndex) => {
                                 if(piece.pieceId === pieceInfo.id){
+                                   if(pieceInfo.piece !== 'King'){
+                                        piece.moves.forEach(
+                                            (square, squareId) => {
+                                                possibleSquares = [
+                                                    ...possibleSquares,
+                                                    square
+                                                ];
+                                            }
+                                        );
+                                   }else{
                                     piece.moves.forEach(
                                         (square, squareId) => {
-                                            possibleSquares = [
-                                                ...possibleSquares,
-                                                square
-                                            ];
+                                            let isSquarePractical;
+                                            isSquarePractical = canMyKingBeHere(square.substring(0,1), square.substring(2,3), chessboardSituation, chessboardLayout.default, history, turn.color);
+
+                                            if(isSquarePractical){
+                                                possibleSquares = [
+                                                    ...possibleSquares,
+                                                    square
+                                                ];
+                                            }
                                         }
                                     );
+                                   }
                                 }
                             }
                         );
 
                         //check if the piece is pinned
                         let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history);
-                        if(myPieceIsPinned){
-                            possibleSquares = [];
+                        if(myPieceIsPinned.status){
+                            //we need to find the position of the attacker and only allow the pinned piece to capture the attacker
+                            let attackerId = myPieceIsPinned.attackers[0];
+                            let allowedMove = '';
+                            //find the square of the attacker
+                            currentPieceInfo.forEach(
+                                (piece, pieceIndex) => {
+                                    if(piece.pieceId === attackerId){
+                                        allowedMove = `${piece.positionOnBoard.rankNumber}.${piece.positionOnBoard.fileNumber}.X`;
+                                    }
+                                }
+                            );
+
+                            let newPossibleSquares = [];
+                            possibleSquares.forEach(
+                                (move, moveIndex) => {
+                                    if(move === allowedMove) {
+                                        newPossibleSquares = [
+                                            ...newPossibleSquares,
+                                            move,
+                                        ]
+                                    }
+                                }
+                            );
+
+                            possibleSquares = newPossibleSquares
+                            
+                            setColorScheme({type: 'POSSIBLE_MOVES', targetSquare: `${rankNumber}.${fileNumber}`, possibleSquares,targetCheckSquare: null,});
                             setActivityPhase({...activityPhase, from:  `${rankNumber}.${fileNumber}`, pieceId: pieceInfo.id, isPiecePinned: true,});
                         }else{
                             setColorScheme({type: 'POSSIBLE_MOVES', targetSquare: `${rankNumber}.${fileNumber}`, possibleSquares,targetCheckSquare: null,});
@@ -295,11 +338,14 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                       }else{
                           myPossibleMoves.forEach(
                               (move, moveIndex) => {
-                                  if(move.search("Cl") === -1 && move.search("Cs") === -1){
+                                  if(move.search("Cl") === -1 && move.search("Cs") === -1
+                                  && canMyKingBeHere(move.substring(0,1), move.substring(2,3), chessboardSituation, chessboardLayout.default, history, turn.color)){
+                                                                        
                                     possibleSquares = [
                                         ...possibleSquares,
                                         move
                                     ];
+
                                   }
                               }
                           );
@@ -343,28 +389,39 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                         possibleMoves.forEach(
                             (piece, pieceIndex) => {
                                 if(piece.pieceId === activityPhase.pieceId){
+                                   if(activityPhase.pieceId !== 15 && activityPhase.pieceId !== 16){
+                                        piece.moves.forEach(
+                                            (move, moveIndex) => {
+                                                if(move === `${rankNumber}.${fileNumber}`){
+                                                    isSquareWithinPossible = true;
+                                                }
+                                                if(move.substring(0,3) === `${rankNumber}.${fileNumber}` && move.search("E") !== -1){
+                                                    isCaseEnPassant = true;
+                                                    let moveInfo = move.split(".");
+                                                    enPassantId = parseInt(moveInfo[moveInfo.length - 1]);
+                                                }
+                                            }
+                                        );
+                                   }else if(activityPhase.pieceId === 15 || activityPhase.pieceId === 16){
                                     piece.moves.forEach(
                                         (move, moveIndex) => {
-                                            if(move === `${rankNumber}.${fileNumber}`){
+                                            let isSquarePractical = canMyKingBeHere(move.substring(0,1), move.substring(2,3), chessboardSituation, chessboardLayout.default, history, turn.color);
+                                            if(move === `${rankNumber}.${fileNumber}` && isSquarePractical){
                                                 isSquareWithinPossible = true;
                                             }
-                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}` && move.search("E") !== -1){
-                                                isCaseEnPassant = true;
-                                                let moveInfo = move.split(".");
-                                                enPassantId = parseInt(moveInfo[moveInfo.length - 1]);
-                                            }
-                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}` && move.search("Cs") !== -1){
+                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}` && move.search("Cs") !== -1 && isSquarePractical){
                                                 isCaseCastlesShort = true;
                                                 let moveInfo = move.split(".");
                                                 castleId = parseInt(moveInfo[moveInfo.length - 1]);
                                             }
-                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}` && move.search("Cl") !== -1){
+                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}` && move.search("Cl") !== -1 && isSquarePractical){
                                                 isCaseCastlesLong = true;
                                                 let moveInfo = move.split(".");
                                                 castleId = parseInt(moveInfo[moveInfo.length - 1]);
                                             }
                                         }
                                     );
+                                   }
                                 }
                             }
                         );
@@ -625,7 +682,7 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                                 }
                             }
                         );
-                       }else{
+                       }else if(activityPhase.pieceId === 15 || activityPhase.pieceId === 16){
                         myPossibleMoves.forEach(
                             (move, moveIndex) => {
                                 if(move === `${rankNumber}.${fileNumber}`){
@@ -705,25 +762,71 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                         let targetPiece = activityPhase.from;
                         let currentPieces = currentPieceInfo;
                         let isSquareWithinPossible = false;
+                        let allowedMove = '';
+
+                        if(activityPhase.isPiecePinned){
+                            let rankNumber;
+                            let fileNumber;
+
+                            currentPieceInfo.forEach(
+                                (piece, pieceIndex) => {
+                                    if(piece.pieceId === activityPhase.pieceId){
+                                        rankNumber = piece.positionOnBoard.rankNumber;
+                                        fileNumber = piece.positionOnBoard.fileNumber;
+                                    }
+                                }
+                            );
+                            let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history);
+                            if(myPieceIsPinned.status){
+                                //we need to find the position of the attacker and only allow the pinned piece to capture the attacker
+                                let attackerId = myPieceIsPinned.attackers[0];
+                                
+                                //find the square of the attacker
+                                currentPieceInfo.forEach(
+                                    (piece, pieceIndex) => {
+                                        if(piece.pieceId === attackerId){
+                                            allowedMove = `${piece.positionOnBoard.rankNumber}.${piece.positionOnBoard.fileNumber}.X`;
+                                        }
+                                    }
+                                );
+                                }
+                            }
 
                         //is the square within possible moves?
                         possibleMoves.forEach(
                             (piece, pieceIndex) => {
                                 if(piece.pieceId === activityPhase.pieceId){
-                                    piece.moves.forEach(
-                                        (move, moveIndex) => {
-                                            if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
-                                                isSquareWithinPossible = true;
+                                    if(activityPhase.pieceId !== 15 && activityPhase.pieceId !== 16){
+                                        piece.moves.forEach(
+                                            (move, moveIndex) => {
+                                                if(activityPhase.isPiecePinned){
+                                                    if(move.substring(0,3) === `${rankNumber}.${fileNumber}` && move === allowedMove){
+                                                        isSquareWithinPossible = true;
+                                                    }
+                                                }else{
+                                                    if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
+                                                        isSquareWithinPossible = true;
+                                                    }
+                                                }
                                             }
-                                        }
-                                    );
+                                        );
+                                    }else if(activityPhase.pieceId === 15 || activityPhase.pieceId === 16){   
+                                        piece.moves.forEach(
+                                            (move, moveIndex) => {
+                                                if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
+                                                    let isSquarePractical = canMyKingBeHere(move.substring(0,1), move.substring(2,3), chessboardSituation, chessboardLayout.default, history, turn.color);
+                                                    if(isSquarePractical){
+                                                        isSquareWithinPossible = true;
+                                                    }
+                                                }   
+                                            }
+                                        );
+                                    }
                                 }
                             }
                         );
                         
-                        if(activityPhase.isPiecePinned){
-                            isSquareWithinPossible = false;
-                        }
+                        
                         if(isSquareWithinPossible){
                             currentPieceInfo.forEach(
                                 (piece, pieceIndex) => {
@@ -821,15 +924,11 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                                 }
                             }
                         );
-                       }else{
+                       }else if(activityPhase.pieceId === 15 || activityPhase.pieceId === 16){
                         myPossibleMoves.forEach(
                             (move, moveIndex) => {
                                 if(move.substring(0,3) === `${rankNumber}.${fileNumber}`){
-                                    if(move.search("X") !== -1){
-                                        isSquareWithinPossible = canMyKingCapture(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history, turn.color);
-                                    }else{
-                                        isSquareWithinPossible = true;
-                                    }
+                                    isSquareWithinPossible = canMyKingBeHere(move.substring(0,1), move.substring(2,3), chessboardSituation, chessboardLayout.default, history, turn.color);
                                 }
                             }
                         );
@@ -921,9 +1020,11 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                             setActivityPhase({from: null, to: null, pieceId: null});
                         }else{
                             let possibleSquares = [];
-                            possibleMoves.forEach(
-                                (piece, pieceIndex) => {
-                                    if(piece.pieceId === pieceInfo.id){
+                        
+                        possibleMoves.forEach(
+                            (piece, pieceIndex) => {
+                                if(piece.pieceId === pieceInfo.id){
+                                   if(pieceInfo.piece !== 'King'){
                                         piece.moves.forEach(
                                             (square, squareId) => {
                                                 possibleSquares = [
@@ -932,19 +1033,65 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                                                 ];
                                             }
                                         );
+                                   }else{
+                                    piece.moves.forEach(
+                                        (square, squareId) => {
+                                            let isSquarePractical;
+                                            if(square.search("X") === -1){
+                                                 isSquarePractical = canMyKingBeHere(square.substring(0,1), square.substring(2,3), chessboardSituation, chessboardLayout.default, history, turn.color)
+                                                
+                                            }else{
+                                                 isSquarePractical = canMyKingBeHere(square.substring(0,1), square.substring(2,3), chessboardSituation, chessboardLayout.default, history, turn.color)
+                                            }
+
+                                            if(isSquarePractical){
+                                                possibleSquares = [
+                                                    ...possibleSquares,
+                                                    square
+                                                ];
+                                            }
+                                        }
+                                    );
+                                   }
+                                }
+                            }
+                        );
+
+                        //check if the piece is pinned
+                        let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history);
+                        if(myPieceIsPinned.status){
+                            //we need to find the position of the attacker and only allow the pinned piece to capture the attacker
+                            let attackerId = myPieceIsPinned.attackers[0];
+                            let allowedMove = '';
+                            //find the square of the attacker
+                            currentPieceInfo.forEach(
+                                (piece, pieceIndex) => {
+                                    if(piece.pieceId === attackerId){
+                                        allowedMove = `${piece.positionOnBoard.rankNumber}.${piece.positionOnBoard.fileNumber}.X`;
                                     }
                                 }
                             );
+
+                            let newPossibleSquares = [];
+                            possibleSquares.forEach(
+                                (move, moveIndex) => {
+                                    if(move === allowedMove) {
+                                        newPossibleSquares = [
+                                            ...newPossibleSquares,
+                                            move,
+                                        ]
+                                    }
+                                }
+                            );
+
+                            possibleSquares = newPossibleSquares
                             
-                            //check if the piece is pinned
-                            let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history);
-                            if(myPieceIsPinned){
-                                possibleSquares = [];
-                                setActivityPhase({...activityPhase, from:  `${rankNumber}.${fileNumber}`, pieceId: pieceInfo.id, isPiecePinned: true,});
-                            }else{
-                                setColorScheme({type: 'POSSIBLE_MOVES', targetSquare: `${rankNumber}.${fileNumber}`, possibleSquares,});
-                                setActivityPhase({...activityPhase, from:  `${rankNumber}.${fileNumber}`, pieceId: pieceInfo.id});
-                            }
+                            setColorScheme({type: 'POSSIBLE_MOVES', targetSquare: `${rankNumber}.${fileNumber}`, possibleSquares,targetCheckSquare: null,});
+                            setActivityPhase({...activityPhase, from:  `${rankNumber}.${fileNumber}`, pieceId: pieceInfo.id, isPiecePinned: true,});
+                        }else{
+                            setColorScheme({type: 'POSSIBLE_MOVES', targetSquare: `${rankNumber}.${fileNumber}`, possibleSquares,targetCheckSquare: null,});
+                            setActivityPhase({...activityPhase, from:  `${rankNumber}.${fileNumber}`, pieceId: pieceInfo.id});
+                        }
                             
                         }
                     }else{

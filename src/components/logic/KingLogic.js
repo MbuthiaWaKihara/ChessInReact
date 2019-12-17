@@ -26,10 +26,12 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                             (piece, pieceIndex) => {
                                 piece.moves.forEach(
                                     (move, moveId) => {
-                                        if(move.substring(0,3) === `${rankInfo.rankNumber}.${fileInfo.fileNumber}`
-                                        && piece.pieceColor !== fileInfo.pieceColor){
-                                            isKingInCheck = {status:true, id:fileInfo.pieceId, attackers: [...attackers, piece.pieceId]};
-                                        }
+                                       if(piece.pieceName !== 'Pawn'){
+                                            if(move.substring(0,3) === `${rankInfo.rankNumber}.${fileInfo.fileNumber}`
+                                            && piece.pieceColor !== fileInfo.pieceColor){
+                                                isKingInCheck = {status:true, id:fileInfo.pieceId, attackers: [...attackers, piece.pieceId]};
+                                            }
+                                       }
                                     }
                                 );
                             }
@@ -37,6 +39,10 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
 
                         //a king can move a single square in any direction provided that square exists, 
                         //has no piece and is not a possible move for an opponent piece
+
+                        //for cases where the opponent piece is a pawn, a king can be able to move in front of the pawn
+                        //even though the square is among the pawn's possible moves
+
 
                         //up the board
                         if(chessboardSituation[rankIndex - 1]
@@ -47,7 +53,9 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                     (piece, pieceIndex) => {
                                        piece.moves.forEach(
                                            (move, moveIndex) => {
-                                                if(move.substring(0,3) === `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].fileNumber}` && piece.pieceColor !== pieceColor){
+                                                if(move.substring(0,3) === `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex].fileNumber}` 
+                                                && piece.pieceColor !== pieceColor
+                                                && piece.pieceName !== 'Pawn'){
                                                     isUnderPressure = true;
                                                 }
                                            }
@@ -74,7 +82,9 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                         (piece, pieceIndex) => {
                                         piece.moves.forEach(
                                             (move, moveIndex) => {
-                                                    if(move.substring(0,3) === `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].fileNumber}` && piece.pieceColor !== pieceColor){
+                                                    if(move.substring(0,3) === `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].fileNumber}` 
+                                                    && piece.pieceColor !== pieceColor
+                                                    && piece.pieceName !== 'Pawn'){
                                                         isUnderPressure = true;
                                                     }
                                             }
@@ -101,7 +111,9 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                             (piece, pieceIndex) => {
                                             piece.moves.forEach(
                                                 (move, moveIndex) => {
-                                                        if(move.substring(0,3) === `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].fileNumber}` && piece.pieceColor !== pieceColor){
+                                                        if(move.substring(0,3) === `${chessboardSituation[rankIndex - 1].rankNumber}.${chessboardSituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].fileNumber}` 
+                                                        && piece.pieceColor !== pieceColor
+                                                        && piece.pieceName !== 'Pawn'){
                                                             isUnderPressure = true;
                                                         }
                                                 }
@@ -127,7 +139,9 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                         (piece, pieceIndex) => {
                                         piece.moves.forEach(
                                             (move, moveIndex) => {
-                                                    if(move.substring(0,3) === `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].fileNumber}` && piece.pieceColor !== pieceColor){
+                                                    if(move.substring(0,3) === `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex].fileNumber}` 
+                                                    && piece.pieceColor !== pieceColor
+                                                    && piece.pieceName !== 'Pawn'){
                                                         isUnderPressure = true;
                                                     }
                                             }
@@ -154,7 +168,9 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                             (piece, pieceIndex) => {
                                             piece.moves.forEach(
                                                 (move, moveIndex) => {
-                                                        if(move.substring(0,3) === `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].fileNumber}` && piece.pieceColor !== pieceColor){
+                                                        if(move.substring(0,3) === `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].fileNumber}` 
+                                                        && piece.pieceColor !== pieceColor
+                                                        && piece.pieceName !== 'Pawn'){
                                                             isUnderPressure = true;
                                                         }
                                                 }
@@ -181,7 +197,9 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                                 (piece, pieceIndex) => {
                                                 piece.moves.forEach(
                                                     (move, moveIndex) => {
-                                                            if(move.substring(0,3) === `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].fileNumber}` && piece.pieceColor !== pieceColor){
+                                                            if(move.substring(0,3) === `${chessboardSituation[rankIndex + 1].rankNumber}.${chessboardSituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].fileNumber}` 
+                                                            && piece.pieceColor !== pieceColor
+                                                            && piece.pieceName !== 'Pawn'){
                                                                 isUnderPressure = true;
                                                             }
                                                     }
@@ -207,7 +225,9 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                             (piece, pieceIndex) => {
                                             piece.moves.forEach(
                                                 (move, moveIndex) => {
-                                                        if(move.substring(0,3) === `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].fileNumber}` && piece.pieceColor !== pieceColor){
+                                                        if(move.substring(0,3) === `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex - 1].fileNumber}` 
+                                                        && piece.pieceColor !== pieceColor
+                                                        && piece.pieceName !== 'Pawn'){
                                                             isUnderPressure = true;
                                                         }
                                                 }
@@ -233,7 +253,9 @@ export const kingTracker = (possibleMoves, chessboardSituation, isLayoutDefault)
                                                 (piece, pieceIndex) => {
                                                 piece.moves.forEach(
                                                     (move, moveIndex) => {
-                                                            if(move.substring(0,3) === `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].fileNumber}` && piece.pieceColor !== pieceColor){
+                                                            if(move.substring(0,3) === `${chessboardSituation[rankIndex].rankNumber}.${chessboardSituation[rankIndex].associatedFilesSituation[fileIndex + 1].fileNumber}` 
+                                                            && piece.pieceColor !== pieceColor
+                                                            && piece.pieceName !== 'Pawn'){
                                                                 isUnderPressure = true;
                                                             }
                                                     }

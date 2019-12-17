@@ -1,5 +1,6 @@
 import {generatePossibleMoves} from './PiecesLogic';
 
+
 //this function is going to decide the possible squares for a piece trying to defend its king
 export const canMyPieceHelp = (attackerInfo, kingInfo, possibleMoves, numberOfAttackers) => {
     let possibleSquares = [];
@@ -225,49 +226,147 @@ export const canMyPieceHelp = (attackerInfo, kingInfo, possibleMoves, numberOfAt
     return possibleSquares;
 }
 
-//this function is used to determine if an opponent piece 
-//can be captured by the king whenever the opponent piece is capturable by the rules of chess
-//the opponent piece cannot be captured by the king if it is supported by one of it's member pieces
-export const canMyKingCapture = (targetRank, targetFile, chessboardSituation, isLayoutDefault, history, turn) => {
-    let kingCanCapture = true;
+//create a situation where you've placed the king in one of its proposed positions
+//and check if the king can be there
+export const canMyKingBeHere = (targetRank, targetFile, chessboardSituation, isLayoutDefault, history, turn) => {
+    let kingCanBeHere = true;
 
     let copySituation = chessboardSituation;
-    //from the chessboard situation, remove the piece that exists in the target square
+
     chessboardSituation.forEach(
         (rankInfo, rankIndex) => {
-            if(rankInfo.rankNumber === targetRank){
+            if(rankInfo.rankNumber === parseInt(targetRank)){
                 rankInfo.associatedFilesSituation.forEach(
                     (fileInfo, fileIndex) => {
-                        if(fileInfo.fileNumber === targetFile){
+                        if(fileInfo.fileNumber === parseInt(targetFile)){
                             copySituation[rankIndex].associatedFilesSituation[fileIndex] = {
                                 fileNumber: fileInfo.fileNumber,
-                                hasPiece: false,
+                                hasPiece: true,
+                                pieceName: 'King',
+                                pieceColor: turn,
+                                positionOnBoard: {
+                                    rankNumber: parseInt(targetRank),
+                                    fileNumber: parseInt(targetFile),
+                                }
                             }
                         }
                     }
                 );
-            }
+            }     
         }
     );
+
+    chessboardSituation.forEach(
+        (rankInfo, rankIndex) => {
+            rankInfo.associatedFilesSituation.forEach(
+                (fileInfo, fileIndex) => {
+                    if(fileInfo.hasPiece && fileInfo.pieceName === 'King' && fileInfo.fileNumber !== parseInt(targetFile) && fileInfo.pieceColor === turn && fileInfo.rankNumber !== parseInt(targetRank)){
+                        copySituation[rankIndex].associatedFilesSituation[fileIndex] = {
+                            hasPiece: false,
+                            fileNumber: fileInfo.fileNumber,
+                        }
+                    }
+                }
+            );     
+        }
+    );
+
 
     //create possible moves based on this new situation
     let possibleMoves = generatePossibleMoves(copySituation, isLayoutDefault, history);
+    // let isKingInCheck = kingTracker(possibleMoves, copySituation, isLayoutDefault);
+    // console.log("abstract possible", possibleMoves);
+    // console.log("abstract situation", copySituation);
 
-    //check whether among the new possible moves 
-    // an opponent piece has the target square as a move
     possibleMoves.forEach(
         (piece, pieceIndex) => {
-            if(piece.pieceColor !== turn){
-                piece.moves.forEach(
-                   (move, moveIndex) => {
-                        if(move.substring(0,1) === `${targetRank}` && move.substring(2, 3) === `${targetFile}`){
-                            kingCanCapture = false;
-                        }
-                   }
-                );
-            }
+            piece.moves.forEach(
+                (move, moveIndex) => { 
+                    if(move.substring(0,1) === targetRank && move.substring(2,3) === targetFile && piece.pieceColor !== turn){
+                        kingCanBeHere = false;
+                    }
+                }
+            );
+        }
+    );
+
+    //if the king is next to the other king, then this situation shuould never happen on the board
+    copySituation.forEach(
+        (rankInfo, rankIndex) => {
+            rankInfo.associatedFilesSituation.forEach(
+                (fileInfo, fileIndex) => {
+                    if(fileInfo.hasPiece && fileInfo.pieceName === 'King'){
+                        //up the board
+                        if(copySituation[rankIndex - 1]
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex]
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex].hasPiece
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex].pieceName === 'King'){
+                                kingCanBeHere = false;
+                            }
+
+                         //down the board
+                         if(copySituation[rankIndex + 1]
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex]
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex].hasPiece
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex].pieceName === 'King'){
+                                kingCanBeHere = false;
+                            }
+
+                        //left of the board
+                        if(copySituation[rankIndex].associatedFilesSituation[fileIndex - 1]
+                            && copySituation[rankIndex].associatedFilesSituation[fileIndex - 1].hasPiece
+                            && copySituation[rankIndex].associatedFilesSituation[fileIndex - 1].pieceName === 'King'){
+                                kingCanBeHere = false;
+                            }
+
+                        //right of the board
+                        if(copySituation[rankIndex].associatedFilesSituation[fileIndex + 1]
+                            && copySituation[rankIndex].associatedFilesSituation[fileIndex + 1].hasPiece
+                            && copySituation[rankIndex].associatedFilesSituation[fileIndex + 1].pieceName === 'King'){
+                                kingCanBeHere = false;
+                            }
+                        
+                        //first diagonal up
+                        if(copySituation[rankIndex - 1]
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1 ]
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].hasPiece
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex - 1].pieceName === 'King'){
+                                kingCanBeHere = false;
+                            }
+
+                        //other diagonal up
+                        if(copySituation[rankIndex - 1]
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1 ]
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].hasPiece
+                            && copySituation[rankIndex - 1].associatedFilesSituation[fileIndex + 1].pieceName === 'King'){
+                                kingCanBeHere = false;
+                            }
+
+                         //first diagonal down
+                         if(copySituation[rankIndex + 1]
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1 ]
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].hasPiece
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex - 1].pieceName === 'King'){
+                                kingCanBeHere = false;
+                            }
+
+                        //other diagonal down
+                        if(copySituation[rankIndex + 1]
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1 ]
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].hasPiece
+                            && copySituation[rankIndex + 1].associatedFilesSituation[fileIndex + 1].pieceName === 'King'){
+                                kingCanBeHere = false;
+                            }
+                        
+
+                    }
+                }
+            );
         }
     );
     
-    return kingCanCapture;
+    // if(isKingInCheck[0].status){
+    //     kingCanBeHere = false;
+    // }
+    return kingCanBeHere;
 }
