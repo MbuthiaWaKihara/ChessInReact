@@ -38,7 +38,7 @@ export const createChessboardInfo = (chessboardLayout, colorScheme) => {
     }
 
     //then conditionally color the chessboard according to the incoming color scheme
-    let chessboardCopy = chessboardInfo
+    let chessboardCopy = chessboardInfo;
     chessboardCopy.forEach(
         (rankInfo, rankIndex) => {
             
