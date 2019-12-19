@@ -312,7 +312,6 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
 
     useEffect(
         () => {
-            console.log("useEffect that runs on changes in checkmate");
             if(checkmate){
 
                 let kingId = isKingInCheck.id;
