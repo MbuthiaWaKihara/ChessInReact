@@ -35,8 +35,11 @@ const transformPiece = (pieceSituation, action) => {
 }
 
 
-const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, promotionPiece, setPromotionPiece}) => 
+const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, promotionPiece, setPromotionPiece, setScreenContent}) => 
 {
+    //a state variable that will track whenever a checkmate occurs
+    const [checkmate, setCheckmate] = useState(false);
+
     //a variable that will store the pieces information when the app is first loaded
     const initialPiecesInfo = initialPieceInfo;
 
@@ -158,12 +161,17 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
     possibleMoves.push(kingPossibleMoves[0]);
     possibleMoves.push(kingPossibleMoves[1]);
     // console.log("check info", isKingInCheck);
-    console.log("possible moves", possibleMoves);
+    // console.log("possible moves", possibleMoves);
 
     useEffect(
         () => {
             //change the board's color scheme whenever a king is in check
             if(isKingInCheck.status){
+                setScreenContent({
+                    message: 'Check!',
+                    verdict: '',
+                });
+
                 chessboardSituation.forEach(
                     (rankInfo, rankIndex) => {
                         rankInfo.associatedFilesSituation.forEach(
@@ -176,6 +184,61 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                         );
                     }
                 );
+            }else{
+                setScreenContent({
+                    message: '',
+                    verdict: '',
+                });
+            }
+
+            //watch for checkmate
+            //if the king that is currently in check does not have moves, the chance for a checkmate on board is likely
+            let kingInDanger = {
+                moves: [0],
+            };
+            kingPossibleMoves.forEach(
+                (king, kingIndex) => {
+                    if(king.pieceId === isKingInCheck.id){
+                        kingInDanger = king;
+                    }
+                }
+            );
+
+            if(kingInDanger.moves.length === 0){
+                //we are going to check for a filtered version of possible moves for pieces of the king's
+                //Color, to determine whether the king has been checkmated
+
+                let kingCanBeSaved = false;
+                let attackerInfo;
+                let kingInfo;
+
+                //get the information of the king
+                //and the information of the attacker
+                currentPieceInfo.forEach(
+                    (piece, pieceIndex) => {
+                        if(piece.pieceId === isKingInCheck.attackers[0]){
+                            attackerInfo = piece.positionOnBoard;
+                        }
+                        if(piece.pieceId === isKingInCheck.id){
+                            kingInfo = piece.positionOnBoard;
+                        }
+                    }
+                );
+
+                possibleMoves.forEach(
+                    (piece, pieceIndex) => {
+                        if(piece.pieceColor === kingInDanger.pieceColor){
+                            let possibleSquares = canMyPieceHelp(attackerInfo, kingInfo, piece.moves, isKingInCheck.attackers.length);
+                            if(possibleSquares.length > 0){
+                                kingCanBeSaved = true;
+                            }
+                        }
+                    }
+                );
+
+                if(!kingCanBeSaved){
+                    setCheckmate(true);
+                }
             }
         },[turn]
     );
@@ -208,6 +271,32 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
     //whenever there is a promotion piece, update the chessboard and return the promotion piece to null
     useEffect(
         () => {
+
+            if(checkmate){
+
+                let kingId = isKingInCheck.id;
+                let kingColor;
+                
+                kingPossibleMoves.forEach(
+                    (king, kingIndex) => {
+                        if(king.pieceId === kingId){
+                            kingColor = king.pieceColor;
+                        }
+                    }
+                );
+                if(kingColor === 'white'){
+                    setScreenContent({
+                        message: '',
+                        verdict: 'Checkmate! Black wins...'
+                    });
+                }else{
+                    setScreenContent({
+                        message: '',
+                        verdict: 'Checkmate! White wins...'
+                    });
+                }
+            }
+
              //change the pieces when the promotion piece is set
              if(promotionPiece){
                 let copyPieceInfo = currentPieceInfo;
@@ -245,9 +334,6 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
         }
     );
 
-
-    //a state variable that will track whenever a checkmate occurs
-    const [checkmate, setCheckmate] = useState(false);
 
     //callbacks
     //handles action when a user makes an interaction with the chessboard

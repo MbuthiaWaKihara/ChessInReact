@@ -55,6 +55,12 @@ const exchangeChessBoardLayout = (currentLayout, action) => {
 }
 const App = () => 
 {
+    //state variable that holds screen text content ** could be temporary **
+    const [screenContent, setScreenContent] = useState({
+        message: '',
+        verdict: ''
+    });
+
     //state variable that keeps track of the board layout
     const [chessboardLayout, switchChessBoardLayout] = useReducer(exchangeChessBoardLayout, initialChessboardLayout);
 
@@ -114,6 +120,7 @@ const App = () =>
         />
         <Screen
                 turn={turn}
+                screenContent={screenContent}
         />
                     
         <Chessboard 
@@ -124,6 +131,7 @@ const App = () =>
             changePromotionState={changePromotionState}
             promotionPiece={promotionPiece}
             setPromotionPiece={setPromotionPiece}
+            setScreenContent={setScreenContent}
         />
 
         <button
