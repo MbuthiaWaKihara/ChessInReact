@@ -42,4 +42,4 @@ const Screen = ({turn, screenContent}) => {
     );
 }
 
-export default Screen;
+export default React.memo(Screen);

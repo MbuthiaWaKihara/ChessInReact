@@ -165,6 +165,7 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
 
     useEffect(
         () => {
+            
             //change the board's color scheme whenever a king is in check
             if(isKingInCheck.status){
                 setScreenContent({
@@ -272,31 +273,6 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
     useEffect(
         () => {
 
-            if(checkmate){
-
-                let kingId = isKingInCheck.id;
-                let kingColor;
-                
-                kingPossibleMoves.forEach(
-                    (king, kingIndex) => {
-                        if(king.pieceId === kingId){
-                            kingColor = king.pieceColor;
-                        }
-                    }
-                );
-                if(kingColor === 'white'){
-                    setScreenContent({
-                        message: '',
-                        verdict: 'Checkmate! Black wins...'
-                    });
-                }else{
-                    setScreenContent({
-                        message: '',
-                        verdict: 'Checkmate! White wins...'
-                    });
-                }
-            }
-
              //change the pieces when the promotion piece is set
              if(promotionPiece){
                 let copyPieceInfo = currentPieceInfo;
@@ -332,6 +308,36 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                 } 
             );
         }
+    );
+
+    useEffect(
+        () => {
+            console.log("useEffect that runs on changes in checkmate");
+            if(checkmate){
+
+                let kingId = isKingInCheck.id;
+                let kingColor;
+                
+                kingPossibleMoves.forEach(
+                    (king, kingIndex) => {
+                        if(king.pieceId === kingId){
+                            kingColor = king.pieceColor;
+                        }
+                    }
+                );
+                if(kingColor === 'white'){
+                    setScreenContent({
+                        message: '',
+                        verdict: 'Checkmate! Black wins...'
+                    });
+                }else{
+                    setScreenContent({
+                        message: '',
+                        verdict: 'Checkmate! White wins...'
+                    });
+                }
+            }
+        },[checkmate]
     );
 
 
