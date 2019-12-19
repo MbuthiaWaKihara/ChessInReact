@@ -11,5 +11,7 @@ Currently only a two player web app
 
 ## Requirements
 
-React Library<br>
-Text Editor
+<ul>
+<li>React Library</li>
+<li>Text Editor</li>
+</ul>
