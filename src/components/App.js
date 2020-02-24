@@ -69,9 +69,6 @@ const App = () =>
         color: 'white',
     });
 
-    //state variable that keeps track of the movecount
-    const [moveCount, setMoveCount] = useState(0);
-
     //state variable that keeps track of the promotion display status and piece color
     const [promotion, setPromotion] = useState({
         displayStatus: 'none',
@@ -97,6 +94,9 @@ const App = () =>
         });
         setPromotionPiece(pieceName);
     }
+    
+    //state variable that keeps track of the movecount
+    const [moveCount, setMoveCount] = useState(0);
 
     //update the movecount whenever turn is white
     useEffect(

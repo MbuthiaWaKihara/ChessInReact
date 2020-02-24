@@ -17,8 +17,9 @@ import {
 import {generatePossibleMoves} from './logic/PiecesLogic';
 import {kingTracker, refineKingMoves, canMyKingBeHere} from './logic/KingLogic';
 import {canMyPieceHelp} from './logic/InCheckLogic';
-import '../styles/boardStyles.css';
 import { isMyPiecePinned, canMyPieceBeHere } from './logic/PinLogic';
+import '../styles/boardStyles.css';
+
 
 
 //this component represents the chess board visual and logic
@@ -360,7 +361,7 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                         );
 
                         //check if the piece is pinned
-                        let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history);
+                        let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history, currentPieceInfo, turn.color);
                         if(myPieceIsPinned){
                             
                             //we need to investigate every move by a pinned piece to ensure the move will not leave the king in check
@@ -407,7 +408,7 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                         let attackerInfo;
 
                         //check if the piece is pinned
-                        let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history);
+                        let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history, currentPieceInfo, turn.color);
 
                         //get the information of the king
                         //and the information of the attacker
@@ -1140,7 +1141,7 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
                             );
 
                             //check if the piece is pinned
-                            let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history);
+                            let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history, currentPieceInfo, turn.color);
                             if(myPieceIsPinned){
                                 //we need to investigate every move by a pinned piece to ensure the move will not leave the king in check
                                 let newPossibleSquares = [];
@@ -1197,7 +1198,7 @@ const Chessboard = ({chessboardLayout, turn, switchTurn, changePromotionState, p
 
                                 let kingInfo;
                                 let attackerInfo;
-                                let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history);
+                                let myPieceIsPinned = isMyPiecePinned(rankNumber, fileNumber, chessboardSituation, chessboardLayout.default, history, currentPieceInfo, turn.color);
 
                                 //get the information of the king
                                 //and the information of the attacker

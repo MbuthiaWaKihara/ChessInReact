@@ -5,7 +5,7 @@ import {determineChessboardSituation} from './BoardLogic';
 
 //this function will tell the chessboard whether 
 //a piece intending to be moved by a player is pinned or not
-export const isMyPiecePinned = (targetRank, targetFile, chessboardSituation, isLayoutDefault, history) => {
+export const isMyPiecePinned = (targetRank, targetFile, chessboardSituation, isLayoutDefault, history, currentPieceInfo, turn) => {
     let pieceIsPinned = false;
     let copySituation = JSON.parse(JSON.stringify(chessboardSituation));
 
@@ -30,7 +30,16 @@ export const isMyPiecePinned = (targetRank, targetFile, chessboardSituation, isL
     let possibleMoves = generatePossibleMoves(copySituation, isLayoutDefault, history);
     let isKingInCheck = kingTracker(possibleMoves, copySituation, isLayoutDefault);
     if(isKingInCheck[0].status){
-        pieceIsPinned = true;
+        //check for the color of the king
+        currentPieceInfo.forEach(
+            (piece, pieceIndex) => {
+                if(piece.pieceId === isKingInCheck[0].id){
+                    if(piece.pieceColor === turn){
+                        pieceIsPinned = true;
+                    }
+                }
+            }
+        );
     }
     return pieceIsPinned;
 }
