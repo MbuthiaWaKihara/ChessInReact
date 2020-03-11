@@ -20,7 +20,7 @@
 </ol>
 
 # Other Sources
-<p>You can also view a deployed version of the repo. Copy and paste this url: <code>https://MbuthiaWaKihara.github.io/ChessInReact/</code></p>
+<p>You can also view a deployed version of the repo. Copy and paste this url: https://MbuthiaWaKihara.github.io/ChessInReact/</p>
 
 # License
 <p>MIT</p>
